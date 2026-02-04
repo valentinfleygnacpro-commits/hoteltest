@@ -1,0 +1,390 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hôtel Atlas — Réservations</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="navbar container">
+            <div class="brand">
+                <span class="brand-mark">A</span>
+                <div>
+                    <h1>Hôtel Atlas</h1>
+                    <p class="brand-sub">Boutique Resort • Bord de mer</p>
+                </div>
+            </div>
+            <button class="nav-toggle" aria-label="Ouvrir le menu">☰</button>
+            <ul class="nav-links">
+                <li><a href="#rooms">Chambres</a></li>
+                <li><a href="#amenities">Services</a></li>
+                <li><a href="#offers">Offres</a></li>
+                <li><a href="#gallery">Galerie</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <a class="btn primary" href="#booking">Réserver</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" id="top">
+            <div class="hero-bg"></div>
+            <div class="container hero-content">
+                <div>
+                    <p class="eyebrow">Une adresse confidentielle à 2h de Paris</p>
+                    <h2>Votre séjour d’exception, pensée du détail à l’émotion.</h2>
+                    <p class="hero-lead">Suites lumineuses, spa minéral, gastronomie locale et service 24/7. Tout est prêt pour votre prochaine escapade.</p>
+                    <div class="hero-cta">
+                        <a class="btn primary" href="#booking">Vérifier les disponibilités</a>
+                        <a class="btn ghost" href="#rooms">Voir les chambres</a>
+                    </div>
+                    <div class="hero-stats">
+                        <div>
+                            <strong>4.9/5</strong>
+                            <span>Note clients</span>
+                        </div>
+                        <div>
+                            <strong>38</strong>
+                            <span>Suites & chambres</span>
+                        </div>
+                        <div>
+                            <strong>12 min</strong>
+                            <span>De la plage</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-card">
+                    <h3>Offre du mois</h3>
+                    <p>2 nuits réservées = transfert privé offert</p>
+                    <div class="hero-card-meta">
+                        <span>Code : ATLAS24</span>
+                        <span>Valable jusqu’au 30/04/2026</span>
+                    </div>
+                    <a class="btn light" href="#offers">Découvrir</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="booking" class="booking">
+            <div class="container">
+                <div class="section-head">
+                    <h3>Réserver votre séjour</h3>
+                    <p>Disponibilités en temps réel, confirmation immédiate.</p>
+                </div>
+                <form id="bookingForm" class="booking-form">
+                    <div class="field">
+                        <label for="checkIn">Arrivée</label>
+                        <input type="date" id="checkIn" required>
+                    </div>
+                    <div class="field">
+                        <label for="checkOut">Départ</label>
+                        <input type="date" id="checkOut" required>
+                    </div>
+                    <div class="field">
+                        <label for="roomType">Type de chambre</label>
+                        <select id="roomType" required>
+                            <option value="">Sélectionner</option>
+                            <option value="classic">Classic — 140€/nuit</option>
+                            <option value="deluxe">Deluxe — 190€/nuit</option>
+                            <option value="suite">Suite Signature — 280€/nuit</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="guests">Voyageurs</label>
+                        <input type="number" id="guests" min="1" max="4" value="2" required>
+                    </div>
+                    <div class="field">
+                        <label for="promo">Code promo</label>
+                        <input type="text" id="promo" placeholder="ATLAS24">
+                    </div>
+                    <div class="field">
+                        <label for="addons">Options</label>
+                        <select id="addons">
+                            <option value="none">Aucune</option>
+                            <option value="breakfast">Petit-déjeuner +18€/pers</option>
+                            <option value="spa">Accès spa +35€/pers</option>
+                            <option value="transfer">Transfert privé +55€</option>
+                        </select>
+                    </div>
+                    <div class="field summary">
+                        <label>Total estimé</label>
+                        <div class="price" id="totalPrice">—</div>
+                        <small>Taxes incluses. Ajusté selon vos dates.</small>
+                    </div>
+                    <button class="btn primary" type="submit">Confirmer la réservation</button>
+                </form>
+                <div class="booking-note">
+                    <div>
+                        <strong>Annulation flexible</strong>
+                        <span>Gratuite jusqu’à 48h avant l’arrivée.</span>
+                    </div>
+                    <div>
+                        <strong>Paiement sécurisé</strong>
+                        <span>Visa, Mastercard, Amex, Apple Pay.</span>
+                    </div>
+                    <div>
+                        <strong>Conciergerie 24/7</strong>
+                        <span>Réservations et expériences sur-mesure.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="rooms" class="rooms">
+            <div class="container">
+                <div class="section-head">
+                    <h3>Chambres & suites</h3>
+                    <p>Lumière naturelle, textures nobles, silence absolu.</p>
+                </div>
+                <div class="rooms-grid">
+                    <article class="room-card">
+                        <div class="room-tag">Classic</div>
+                        <h4>Chambre Classic</h4>
+                        <p>22m² • Lit queen • Salle de bain en pierre</p>
+                        <ul class="room-features">
+                            <li>Douche à effet pluie</li>
+                            <li>Mini-bar signature</li>
+                            <li>Vue patio intérieur</li>
+                        </ul>
+                        <div class="room-footer">
+                            <span>140€/nuit</span>
+                            <button class="btn ghost" data-room="classic">Réserver</button>
+                        </div>
+                    </article>
+                    <article class="room-card">
+                        <div class="room-tag">Deluxe</div>
+                        <h4>Chambre Deluxe</h4>
+                        <p>30m² • Lit king • Balcon privé</p>
+                        <ul class="room-features">
+                            <li>Machine à espresso</li>
+                            <li>Salon lounge</li>
+                            <li>Vue jardin et mer</li>
+                        </ul>
+                        <div class="room-footer">
+                            <span>190€/nuit</span>
+                            <button class="btn ghost" data-room="deluxe">Réserver</button>
+                        </div>
+                    </article>
+                    <article class="room-card highlight">
+                        <div class="room-tag">Suite</div>
+                        <h4>Suite Signature</h4>
+                        <p>45m² • Bain îlot • Terrasse panoramique</p>
+                        <ul class="room-features">
+                            <li>Room service 24/7</li>
+                            <li>Coin bureau design</li>
+                            <li>Panorama sur la baie</li>
+                        </ul>
+                        <div class="room-footer">
+                            <span>280€/nuit</span>
+                            <button class="btn primary" data-room="suite">Réserver</button>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="amenities" class="amenities">
+            <div class="container">
+                <div class="section-head">
+                    <h3>Services & expériences</h3>
+                    <p>Une équipe dédiée pour orchestrer chaque moment.</p>
+                </div>
+                <div class="amenities-grid">
+                    <div class="amenity">
+                        <h4>Spa minéral</h4>
+                        <p>Sauna, hammam, soins holistiques et bassin chauffé.</p>
+                    </div>
+                    <div class="amenity">
+                        <h4>Restaurant Atelier</h4>
+                        <p>Cuisine locale, carte saisonnière, terrasse ombragée.</p>
+                    </div>
+                    <div class="amenity">
+                        <h4>Conciergerie</h4>
+                        <p>Excursions privées, réservations culturelles, transferts.</p>
+                    </div>
+                    <div class="amenity">
+                        <h4>Espace travail</h4>
+                        <p>Cabines calmes, Wi‑Fi haut débit, salles de réunion.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="offers" class="offers">
+            <div class="container">
+                <div class="section-head">
+                    <h3>Offres spéciales</h3>
+                    <p>Des séjours pensés pour vous surprendre.</p>
+                </div>
+                <div class="offers-grid">
+                    <article>
+                        <h4>Escapade bien‑être</h4>
+                        <p>2 nuits + massage + spa illimité.</p>
+                        <span>Dès 420€</span>
+                    </article>
+                    <article>
+                        <h4>Gastronomie locale</h4>
+                        <p>Menu dégustation 5 plats inclus.</p>
+                        <span>Dès 360€</span>
+                    </article>
+                    <article>
+                        <h4>Work & Reset</h4>
+                        <p>Suite + salle de réunion + café illimité.</p>
+                        <span>Dès 510€</span>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="gallery" class="gallery">
+            <div class="container">
+                <div class="section-head">
+                    <h3>Galerie</h3>
+                    <p>Ambiances et détails de l’hôtel.</p>
+                </div>
+                <div class="gallery-grid">
+                    <div class="gallery-card large">Suite Signature</div>
+                    <div class="gallery-card">Spa minéral</div>
+                    <div class="gallery-card">Restaurant Atelier</div>
+                    <div class="gallery-card">Piscine extérieure</div>
+                    <div class="gallery-card">Lobby</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="testimonials">
+            <div class="container">
+                <div class="section-head">
+                    <h3>Ils en parlent</h3>
+                    <p>Expériences vécues par nos hôtes.</p>
+                </div>
+                <div class="testimonial-grid">
+                    <blockquote>
+                        “Service impeccable, literie incroyable. Nous reviendrons.”
+                        <span>Camille & Hugo</span>
+                    </blockquote>
+                    <blockquote>
+                        “Le spa et le restaurant valent le détour à eux seuls.”
+                        <span>Salma, Lyon</span>
+                    </blockquote>
+                    <blockquote>
+                        “Un lieu calme pour travailler et se ressourcer.”
+                        <span>Jonathan, Londres</span>
+                    </blockquote>
+                </div>
+            </div>
+        </section>
+
+        <section class="faq">
+            <div class="container">
+                <div class="section-head">
+                    <h3>Questions fréquentes</h3>
+                    <p>Tout ce qu’il faut savoir avant d’arriver.</p>
+                </div>
+                <div class="faq-list">
+                    <button class="faq-item">
+                        <span>À quelle heure sont les check‑in et check‑out ?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-panel">
+                        Check‑in à partir de 15h, check‑out jusqu’à 11h.
+                    </div>
+                    <button class="faq-item">
+                        <span>Le petit‑déjeuner est‑il inclus ?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-panel">
+                        Disponible en option à 18€ par personne.
+                    </div>
+                    <button class="faq-item">
+                        <span>Les animaux sont‑ils acceptés ?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-panel">
+                        Oui, sur demande préalable. Supplément de 15€/nuit.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact">
+            <div class="container">
+                <div class="section-head">
+                    <h3>Contact & accès</h3>
+                    <p>Nous sommes à votre écoute 7j/7.</p>
+                </div>
+                <div class="contact-grid">
+                    <form class="contact-form">
+                        <div class="field">
+                            <label for="name">Nom complet</label>
+                            <input type="text" id="name" required>
+                        </div>
+                        <div class="field">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="field">
+                            <label for="message">Message</label>
+                            <textarea id="message" rows="4" required></textarea>
+                        </div>
+                        <button class="btn primary" type="submit">Envoyer</button>
+                    </form>
+                    <div class="contact-info">
+                        <div>
+                            <strong>Adresse</strong>
+                            <p>12 Avenue des Dunes, 17340 Île de Ré</p>
+                        </div>
+                        <div>
+                            <strong>Téléphone</strong>
+                            <p>+33 5 00 00 00 00</p>
+                        </div>
+                        <div>
+                            <strong>Email</strong>
+                            <p>bonjour@hotel-atlas.fr</p>
+                        </div>
+                        <div class="map-placeholder">Carte interactive</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div>
+                <h4>Hôtel Atlas</h4>
+                <p>Un refuge de caractère entre mer et nature.</p>
+            </div>
+            <div>
+                <h4>Informations</h4>
+                <ul>
+                    <li>Politique d’annulation</li>
+                    <li>Conditions générales</li>
+                    <li>Mentions légales</li>
+                </ul>
+            </div>
+            <div>
+                <h4>Newsletter</h4>
+                <p>Recevez nos offres privées et inspirations voyage.</p>
+                <form class="newsletter">
+                    <input type="email" placeholder="Votre email">
+                    <button class="btn light" type="submit">S’inscrire</button>
+                </form>
+            </div>
+        </div>
+        <p class="footer-bottom">© 2026 Hôtel Atlas. Tous droits réservés.</p>
+    </footer>
+
+    <div class="modal" id="bookingModal" aria-hidden="true">
+        <div class="modal-content">
+            <h3>Réservation confirmée</h3>
+            <p id="bookingSummary"></p>
+            <button class="btn primary" id="closeModal">Fermer</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
