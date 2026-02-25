@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import PaiementSuccessClient from "./success-client";
 
 export const metadata = {
@@ -10,5 +11,9 @@ export const metadata = {
 };
 
 export default function PaiementSuccesPage() {
-  return <PaiementSuccessClient />;
+  return (
+    <Suspense fallback={null}>
+      <PaiementSuccessClient />
+    </Suspense>
+  );
 }
