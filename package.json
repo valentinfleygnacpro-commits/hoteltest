@@ -1,0 +1,23 @@
+{
+  "name": "hoteltest",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint src --max-warnings 0",
+    "test": "node --test tests/**/*.test.js"
+  },
+  "dependencies": {
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "stripe": "^20.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.2",
+    "eslint-config-next": "^16.1.6",
+    "eslint-plugin-next": "^0.0.0"
+  }
+}
