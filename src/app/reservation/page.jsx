@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import ReservationClient from "./reservation-client";
 
 export const metadata = {
@@ -12,7 +13,9 @@ export default function ReservationPage() {
       <p className="page-lead">
         Selectionnez vos dates, votre chambre et confirmez votre paiement en ligne.
       </p>
-      <ReservationClient />
+      <Suspense fallback={null}>
+        <ReservationClient />
+      </Suspense>
     </main>
   );
 }
