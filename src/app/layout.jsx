@@ -15,10 +15,19 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://hotel-atlas.example";
+function getMetadataBase() {
+  const fallback = new URL("https://hotel-atlas.example");
+  const raw = process.env.NEXT_PUBLIC_SITE_URL;
+  if (!raw) return fallback;
+  try {
+    return new URL(raw);
+  } catch {
+    return fallback;
+  }
+}
 
 export const metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: getMetadataBase(),
   title: {
     default: "Hotel Atlas - Réservations",
     template: "%s | Hotel Atlas",
