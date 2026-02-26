@@ -1,7 +1,14 @@
 const fs = require("node:fs/promises");
 const path = require("node:path");
 
-const DB_DIR = path.join(process.cwd(), "data");
+function resolveDbDir() {
+  if (process.env.VERCEL) {
+    return path.join("/tmp", "hoteltest-data");
+  }
+  return path.join(process.cwd(), "data");
+}
+
+const DB_DIR = resolveDbDir();
 const DB_FILE = path.join(DB_DIR, "hotel-db.json");
 
 const DEFAULT_DB = {
