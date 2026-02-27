@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AppButton from "@/components/ui/app-button";
 
 export const metadata = {
   title: "Services",
@@ -33,7 +34,9 @@ export default function ServicesPage() {
       </div>
 
       <div className="section-top">
-        <Link className="btn primary" href="/disponibilites">Reserver un sejour</Link>
+        <AppButton asChild tone="primary">
+          <Link href="/disponibilites">Reserver un sejour</Link>
+        </AppButton>
       </div>
     </main>
   );

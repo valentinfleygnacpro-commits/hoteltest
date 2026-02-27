@@ -1,11 +1,12 @@
 import dbLib from "../../lib/db";
 import AdminBookingStatus from "./AdminBookingStatus";
+import AdminFilters from "./AdminFilters";
 
 const { getDashboardDataFiltered } = dbLib;
 
 export const metadata = {
   title: "Dashboard Admin",
-  description: "Suivi des réservations, contacts, newsletter et analytics.",
+  description: "Suivi des reservations, contacts, newsletter et analytics.",
   robots: {
     index: false,
     follow: false,
@@ -39,10 +40,11 @@ export default async function AdminPage({ searchParams }) {
   const dateFrom = resolvedParams?.dateFrom || "";
   const dateTo = resolvedParams?.dateTo || "";
   const expected = process.env.ADMIN_DASHBOARD_TOKEN || "";
+
   if (expected && token !== expected) {
     return (
       <main className="container page-shell">
-        <h1>Accès refusé</h1>
+        <h1>Acces refuse</h1>
         <p className="page-lead">Ajoute le token dans l&apos;URL: /admin?token=VOTRE_TOKEN</p>
       </main>
     );
@@ -59,30 +61,23 @@ export default async function AdminPage({ searchParams }) {
       <p className="page-lead">Vue rapide des leads et conversions du site.</p>
 
       <section className="value-grid section-top">
-        {metricCard("Réservations", data.totals.bookings)}
-        {metricCard("Résultats filtrés", data.totals.filteredBookings)}
+        {metricCard("Reservations", data.totals.bookings)}
+        {metricCard("Resultats filtres", data.totals.filteredBookings)}
         {metricCard("Contacts", data.totals.contacts)}
         {metricCard("Newsletter", data.totals.newsletter)}
-        {metricCard("Événements analytics", data.totals.analytics)}
+        {metricCard("Evenements analytics", data.totals.analytics)}
       </section>
 
       <section className="section-top">
         <h2>Filtres</h2>
-        <form method="GET" className="admin-filters">
-          <input type="hidden" name="token" value={token} />
-          <input type="text" name="q" defaultValue={q} placeholder="Recherche client/email/id" />
-          <select name="status" defaultValue={status}>
-            <option value="all">Tous les statuts</option>
-            <option value="new">Nouvelle</option>
-            <option value="confirmed">Confirmée</option>
-            <option value="cancelled">Annulée</option>
-          </select>
-          <input type="date" name="dateFrom" defaultValue={dateFrom} />
-          <input type="date" name="dateTo" defaultValue={dateTo} />
-          <button className="btn primary" type="submit">Filtrer</button>
-          <a className="btn ghost" href={`/admin?token=${encodeURIComponent(token)}`}>Réinitialiser</a>
-          <a className="btn light" href={exportLink}>Exporter CSV</a>
-        </form>
+        <AdminFilters
+          token={token}
+          q={q}
+          status={status}
+          dateFrom={dateFrom}
+          dateTo={dateTo}
+          exportLink={exportLink}
+        />
       </section>
 
       <section className="section-top">
@@ -93,22 +88,22 @@ export default async function AdminPage({ searchParams }) {
             data.recent.analytics.filter((item) => item.event === "cta_click").length
           )}
           {metricCard(
-            "Réservations soumises",
+            "Reservations soumises",
             data.recent.analytics.filter((item) => item.event === "booking_submit" && item.label === "success").length
           )}
           {metricCard(
-            "Contacts envoyés",
+            "Contacts envoyes",
             data.recent.analytics.filter((item) => item.event === "contact_submit" && item.label === "success").length
           )}
           {metricCard(
-            "Newsletters confirmées",
+            "Newsletters confirmees",
             data.recent.analytics.filter((item) => item.event === "newsletter_submit" && item.label === "success").length
           )}
         </div>
       </section>
 
       <section className="section-top">
-        <h2>Dernières réservations</h2>
+        <h2>Dernieres reservations</h2>
         <div className="admin-table-wrap">
           <table className="admin-table">
             <thead>
@@ -117,7 +112,7 @@ export default async function AdminPage({ searchParams }) {
                 <th>Date</th>
                 <th>Client</th>
                 <th>Email</th>
-                <th>Séjour</th>
+                <th>Sejour</th>
                 <th>Total</th>
                 <th>Paiement</th>
                 <th>Statut</th>
@@ -140,7 +135,7 @@ export default async function AdminPage({ searchParams }) {
               ))}
               {data.recent.bookings.length === 0 ? (
                 <tr>
-                  <td colSpan={8}>Aucune réservation.</td>
+                  <td colSpan={8}>Aucune reservation.</td>
                 </tr>
               ) : null}
             </tbody>
@@ -180,7 +175,7 @@ export default async function AdminPage({ searchParams }) {
       </section>
 
       <section className="section-top">
-        <h2>Dernières conversions newsletter</h2>
+        <h2>Dernieres conversions newsletter</h2>
         <ul className="faq-list">
           {data.recent.newsletter.map((item) => (
             <li key={item.id} className="faq-item">
@@ -193,7 +188,7 @@ export default async function AdminPage({ searchParams }) {
       </section>
 
       <section className="section-top">
-        <h2>Derniers événements analytics</h2>
+        <h2>Derniers evenements analytics</h2>
         <div className="admin-table-wrap">
           <table className="admin-table">
             <thead>
@@ -215,7 +210,7 @@ export default async function AdminPage({ searchParams }) {
               ))}
               {data.recent.analytics.length === 0 ? (
                 <tr>
-                  <td colSpan={4}>Aucun événement.</td>
+                  <td colSpan={4}>Aucun evenement.</td>
                 </tr>
               ) : null}
             </tbody>

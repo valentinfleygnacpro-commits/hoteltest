@@ -1,6 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import AppButton from "@/components/ui/app-button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 async function trackContact(status) {
   try {
@@ -60,22 +64,22 @@ export default function ContactClient() {
 
   return (
     <form className="contact-form page-contact-form" onSubmit={onSubmit}>
-      <input type="text" name="website" className="hp-field" tabIndex="-1" autoComplete="off" />
+      <Input type="text" name="website" className="hp-field" tabIndex="-1" autoComplete="off" />
       <div className="field">
-        <label htmlFor="name">Nom complet</label>
-        <input type="text" id="name" name="name" required />
+        <Label htmlFor="name">Nom complet</Label>
+        <Input type="text" id="name" name="name" required />
       </div>
       <div className="field">
-        <label htmlFor="email">Email</label>
-        <input type="email" id="email" name="email" required />
+        <Label htmlFor="email">Email</Label>
+        <Input type="email" id="email" name="email" required />
       </div>
       <div className="field">
-        <label htmlFor="message">Message</label>
-        <textarea id="message" name="message" rows="5" required></textarea>
+        <Label htmlFor="message">Message</Label>
+        <Textarea id="message" name="message" rows="5" required />
       </div>
-      <button className="btn primary" type="submit" disabled={submitting}>
+      <AppButton tone="primary" type="submit" disabled={submitting}>
         {submitting ? "Envoi..." : "Envoyer"}
-      </button>
+      </AppButton>
       {status ? <p className="form-status">{status}</p> : null}
     </form>
   );

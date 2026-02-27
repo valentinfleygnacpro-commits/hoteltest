@@ -2,6 +2,10 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import AppButton from "@/components/ui/app-button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import pricingLib from "../../lib/pricing";
 
 const { getSeasonForDate, isWeekendDate, WEEKEND_SURCHARGE, parseLocalDate } = pricingLib;
@@ -143,15 +147,16 @@ export default function AvailabilityForm({ today }) {
   return (
     <form className="availability-form" onSubmit={onSubmit}>
       <div className="field availability-calendar-field">
-        <label htmlFor="availabilityCheckIn" className="availability-calendar-label">
-          <span className="availability-calendar-icon" aria-hidden="true">🗓</span>
+        <Label htmlFor="availabilityCheckIn" className="availability-calendar-label">
+          <span className="availability-calendar-icon" aria-hidden="true">Cal</span>
           Arrivee / Depart
-        </label>
-        <input type="hidden" id="availabilityCheckIn" name="checkIn" value={checkIn} />
-        <input type="hidden" id="availabilityCheckOut" name="checkOut" value={checkOut} />
+        </Label>
+        <Input type="hidden" id="availabilityCheckIn" name="checkIn" value={checkIn} />
+        <Input type="hidden" id="availabilityCheckOut" name="checkOut" value={checkOut} />
         <div className="calendar-toggle-bar">
-          <button
+          <AppButton
             type="button"
+            tone="ghost"
             className={`calendar-inline-trigger ${calendarOpen ? "is-open" : ""}`}
             onClick={() => {
               if (!calendarOpen && checkIn) setVisibleMonth(toMonthISO(checkIn));
@@ -162,29 +167,31 @@ export default function AvailabilityForm({ today }) {
           >
             <span>{calendarTriggerLabel}</span>
             <span className="calendar-inline-caret" aria-hidden="true">{calendarOpen ? "^" : "v"}</span>
-          </button>
+          </AppButton>
         </div>
         {calendarOpen ? (
           <div className="calendar-panel" id="availability-calendar-panel">
             <div className="calendar-toolbar">
-              <button
+              <AppButton
                 type="button"
-                className="btn ghost calendar-nav"
+                tone="ghost"
+                className="calendar-nav"
                 onClick={() => setVisibleMonth((prev) => addMonths(prev, -1))}
                 disabled={!canGoPrevMonth}
                 aria-label="Mois precedent"
               >
                 <span className="calendar-nav-icon" aria-hidden="true">{"<"}</span>
-              </button>
+              </AppButton>
               <p className="calendar-range-label">{monthLabel(visibleMonth)}</p>
-              <button
+              <AppButton
                 type="button"
-                className="btn ghost calendar-nav"
+                tone="ghost"
+                className="calendar-nav"
                 onClick={() => setVisibleMonth((prev) => addMonths(prev, 1))}
                 aria-label="Mois suivant"
               >
                 <span className="calendar-nav-icon" aria-hidden="true">{">"}</span>
-              </button>
+              </AppButton>
             </div>
             <div className="booking-calendar" role="group" aria-label="Calendrier de disponibilite">
               <div className="calendar-month">
@@ -200,9 +207,10 @@ export default function AvailabilityForm({ today }) {
                     cell.empty ? (
                       <span key={cell.key} className="calendar-empty" />
                     ) : (
-                      <button
+                      <AppButton
                         key={cell.key}
                         type="button"
+                        tone="ghost"
                         className={`calendar-day ${getCellState(cell.iso)}`}
                         disabled={cell.iso < today}
                         onClick={() => selectDate(cell.iso)}
@@ -210,7 +218,7 @@ export default function AvailabilityForm({ today }) {
                         title={getCellTitle(cell.iso)}
                       >
                         <span className="day-number">{cell.day}</span>
-                      </button>
+                      </AppButton>
                     )
                   )}
                 </div>
@@ -220,19 +228,25 @@ export default function AvailabilityForm({ today }) {
         ) : null}
       </div>
 
-      <label className="field">
-        Voyageurs
-        <select name="guests" value={guests} onChange={(e) => setGuests(e.target.value)}>
-          <option value="1">1 personne</option>
-          <option value="2">2 personnes</option>
-          <option value="3">3 personnes</option>
-          <option value="4">4 personnes</option>
-        </select>
+      <label className="field" htmlFor="availability-guests">
+        <Label htmlFor="availability-guests">Voyageurs</Label>
+        <Input type="hidden" name="guests" value={guests} />
+        <Select value={guests} onValueChange={setGuests}>
+          <SelectTrigger id="availability-guests">
+            <SelectValue placeholder="Voyageurs" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="1">1 personne</SelectItem>
+            <SelectItem value="2">2 personnes</SelectItem>
+            <SelectItem value="3">3 personnes</SelectItem>
+            <SelectItem value="4">4 personnes</SelectItem>
+          </SelectContent>
+        </Select>
       </label>
 
-      <button className="btn primary" type="submit">
-        Voir les chambres disponibles {"→"}
-      </button>
+      <AppButton tone="primary" type="submit">
+        Voir les chambres disponibles {"->"}
+      </AppButton>
 
       {error ? <p className="form-error availability-error" role="alert">{error}</p> : null}
     </form>

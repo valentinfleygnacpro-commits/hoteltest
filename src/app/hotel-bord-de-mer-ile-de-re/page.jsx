@@ -1,8 +1,9 @@
 import Link from "next/link";
+import AppButton from "@/components/ui/app-button";
 
 export const metadata = {
-  title: "Hôtel Bord de Mer Île de Ré",
-  description: "Hôtel en bord de mer à l'Île de Ré avec chambres élégantes et services premium.",
+  title: "Hotel Bord de Mer Ile de Re",
+  description: "Hotel en bord de mer a l'Ile de Re avec chambres elegantes et services premium.",
 };
 
 export default function HotelBordDeMerIleDeRePage() {
@@ -11,24 +12,26 @@ export default function HotelBordDeMerIleDeRePage() {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Accueil", item: "/" },
-      { "@type": "ListItem", position: 2, name: "Hôtel Bord de Mer Île de Ré", item: "/hotel-bord-de-mer-ile-de-re" },
+      { "@type": "ListItem", position: 2, name: "Hotel Bord de Mer Ile de Re", item: "/hotel-bord-de-mer-ile-de-re" },
     ],
   };
 
   return (
     <main className="container page-shell">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <h1>Hôtel bord de mer à l’Île de Ré</h1>
+      <h1>Hotel bord de mer a l'Ile de Re</h1>
       <p className="page-lead">
-        Profitez d’un séjour face à l’océan avec suites lumineuses, service discret et accès rapide aux plages.
+        Profitez d'un sejour face a l'ocean avec suites lumineuses, service discret et acces rapide aux plages.
       </p>
       <section className="section-top">
         <p>
-          Idéal pour un week-end romantique, des vacances familiales ou une parenthèse détente en toute saison.
+          Ideal pour un week-end romantique, des vacances familiales ou une parenthese detente en toute saison.
         </p>
       </section>
       <div className="section-top">
-        <Link className="btn primary" href="/disponibilites">Réserver votre séjour</Link>
+        <AppButton asChild tone="primary">
+          <Link href="/disponibilites">Reserver votre sejour</Link>
+        </AppButton>
       </div>
     </main>
   );

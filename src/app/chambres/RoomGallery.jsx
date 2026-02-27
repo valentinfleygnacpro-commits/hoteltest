@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import AppButton from "@/components/ui/app-button";
 
 export default function RoomGallery({ images, title }) {
   const [index, setIndex] = useState(0);
@@ -27,12 +28,12 @@ export default function RoomGallery({ images, title }) {
       />
       {total > 1 ? (
         <>
-          <button className="room-gallery-btn prev" type="button" aria-label="Photo precedente" onClick={prev}>
+          <AppButton className="room-gallery-btn prev" type="button" aria-label="Photo precedente" onClick={prev}>
             {"<"}
-          </button>
-          <button className="room-gallery-btn next" type="button" aria-label="Photo suivante" onClick={next}>
+          </AppButton>
+          <AppButton className="room-gallery-btn next" type="button" aria-label="Photo suivante" onClick={next}>
             {">"}
-          </button>
+          </AppButton>
         </>
       ) : null}
     </div>

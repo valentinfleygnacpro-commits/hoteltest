@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import AppButton from "@/components/ui/app-button";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function CookieBanner() {
   const [visible, setVisible] = useState(false);
@@ -35,21 +37,21 @@ export default function CookieBanner() {
         Nous utilisons des cookies essentiels et, avec votre accord, des cookies de mesure d&apos;audience.
       </p>
       <div className="cookie-controls">
-        <label>
-          <input type="checkbox" checked={analytics} onChange={(e) => setAnalytics(e.target.checked)} />
+        <label className="inline-flex items-center gap-2">
+          <Checkbox checked={analytics} onCheckedChange={(checked) => setAnalytics(Boolean(checked))} />
           Autoriser les statistiques
         </label>
       </div>
       <div className="cookie-actions">
-        <button className="btn ghost" type="button" onClick={() => savePrefs({ essential: true, analytics: false })}>
+        <AppButton tone="ghost" type="button" onClick={() => savePrefs({ essential: true, analytics: false })}>
           Refuser
-        </button>
-        <button className="btn primary" type="button" onClick={() => savePrefs({ essential: true, analytics })}>
+        </AppButton>
+        <AppButton tone="primary" type="button" onClick={() => savePrefs({ essential: true, analytics })}>
           Enregistrer
-        </button>
-        <button className="btn light" type="button" onClick={() => savePrefs({ essential: true, analytics: true })}>
+        </AppButton>
+        <AppButton tone="light" type="button" onClick={() => savePrefs({ essential: true, analytics: true })}>
           Tout accepter
-        </button>
+        </AppButton>
       </div>
     </aside>
   );

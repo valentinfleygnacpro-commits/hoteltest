@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AppButton from "@/components/ui/app-button";
 import siteContentLib from "../../lib/siteContent";
 import pricingLib from "../../lib/pricing";
 
@@ -38,7 +39,9 @@ export default function OffresPage() {
       </div>
 
       <div className="section-top">
-        <Link className="btn primary" href="/disponibilites">Voir les disponibilites</Link>
+        <AppButton asChild tone="primary">
+          <Link href="/disponibilites">Voir les disponibilites</Link>
+        </AppButton>
       </div>
     </main>
   );

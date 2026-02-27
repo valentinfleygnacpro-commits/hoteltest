@@ -3,6 +3,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import AppButton from "@/components/ui/app-button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import pricingLib from "../lib/pricing";
 import siteContentLib from "../lib/siteContent";
 
@@ -101,7 +106,6 @@ export default function HotelPage() {
   const [form, setForm] = useState(DEFAULT_FORM);
   const [bookingStep, setBookingStep] = useState(1);
   const [bookingError, setBookingError] = useState("");
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState(-1);
   const [modalOpen, setModalOpen] = useState(false);
   const [bookingSummary, setBookingSummary] = useState("");
@@ -114,7 +118,6 @@ export default function HotelPage() {
   const closeModalRef = useRef(null);
   const modalContentRef = useRef(null);
   const bookingSectionRef = useRef(null);
-  const navRef = useRef(null);
 
   useEffect(() => {
     if (modalOpen) {
@@ -154,36 +157,6 @@ export default function HotelPage() {
 
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [modalOpen]);
-
-  useEffect(() => {
-    function onDocumentClick(event) {
-      if (!mobileNavOpen) return;
-      if (!navRef.current.contains(event.target)) {
-        setMobileNavOpen(false);
-      }
-    }
-
-    function onKeyDown(event) {
-      if (event.key === "Escape") {
-        setMobileNavOpen(false);
-      }
-    }
-
-    document.addEventListener("click", onDocumentClick);
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("click", onDocumentClick);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [mobileNavOpen]);
-
-  useEffect(() => {
-    function onResize() {
-      if (window.innerWidth > 900) setMobileNavOpen(false);
-    }
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -427,34 +400,6 @@ export default function HotelPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(hotelJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
 
-      <header className="site-header">
-        <nav ref={navRef} className="navbar container" aria-label="Navigation principale">
-          <div className="brand">
-            <span className="brand-mark">A</span>
-            <div>
-              <p className="brand-title">Hotel Atlas</p>
-              <p className="brand-sub">Boutique Resort - Bord de mer</p>
-            </div>
-          </div>
-          <button
-            className="nav-toggle"
-            aria-label="Ouvrir le menu"
-            aria-expanded={mobileNavOpen}
-            aria-controls="primary-navigation"
-            onClick={() => setMobileNavOpen((prev) => !prev)}
-          >
-            Menu
-          </button>
-          <ul id="primary-navigation" className={`nav-links ${mobileNavOpen ? "open" : ""}`}>
-            <li><Link href="/disponibilites" onClick={() => setMobileNavOpen(false)}>Chambres</Link></li>
-            <li><Link href="/services" onClick={() => setMobileNavOpen(false)}>Services</Link></li>
-            <li><Link href="/offres" onClick={() => setMobileNavOpen(false)}>Offres</Link></li>
-            <li><Link href="/contact" onClick={() => setMobileNavOpen(false)}>Contact</Link></li>
-          </ul>
-          <Link className="btn primary" href="/disponibilites" data-track="header-reserver">Reserver</Link>
-        </nav>
-      </header>
-
       <main>
         <section className="hero" id="top">
           <div className="hero-image">
@@ -470,12 +415,12 @@ export default function HotelPage() {
               <p>Hotel & Spa</p>
               <h2>HOTEL ATLAS</h2>
             </div>
-            <button className="hero-carousel-btn prev" type="button" aria-label="Image precedente" onClick={showPrevHeroImage}>
+            <AppButton className="hero-carousel-btn prev" type="button" aria-label="Image precedente" onClick={showPrevHeroImage}>
               ‹
-            </button>
-            <button className="hero-carousel-btn next" type="button" aria-label="Image suivante" onClick={showNextHeroImage}>
+            </AppButton>
+            <AppButton className="hero-carousel-btn next" type="button" aria-label="Image suivante" onClick={showNextHeroImage}>
               ›
-            </button>
+            </AppButton>
           </div>
           <div className="hero-overlay container">
             <div className="hero-copy">
@@ -484,8 +429,12 @@ export default function HotelPage() {
               <p className="hero-lead">Suites lumineuses, spa mineral, gastronomie locale et service 24/7.</p>
               <p className="beach-highlight">A seulement 2 min de la plage</p>
               <div className="hero-cta">
-                <Link className="btn primary" href="/disponibilites" data-track="hero-disponibilites">Verifier les disponibilites</Link>
-                <Link className="btn ghost" href="/disponibilites" data-track="hero-chambres">Voir les chambres</Link>
+                <AppButton asChild tone="primary">
+                  <Link href="/disponibilites" data-track="hero-disponibilites">Verifier les disponibilites</Link>
+                </AppButton>
+                <AppButton asChild tone="ghost">
+                  <Link href="/disponibilites" data-track="hero-chambres">Voir les chambres</Link>
+                </AppButton>
               </div>
               <div className="hero-stats">
                 <div>
@@ -515,15 +464,16 @@ export default function HotelPage() {
                   src="https://www.google.com/maps?q=12+Avenue+des+Dunes%2C+17340+Ile+de+Re%2C+France&z=14&output=embed"
                 />
               </div>
-              <a
-                className="btn light"
-                href="https://www.google.com/maps/dir/?api=1&destination=12+Avenue+des+Dunes%2C+17340+Ile+de+Re%2C+France"
-                target="_blank"
-                rel="noreferrer"
-                data-track="hero-map-itineraire"
-              >
-                Voir l&apos;itineraire
-              </a>
+              <AppButton asChild tone="light">
+                <a
+                  href="https://www.google.com/maps/dir/?api=1&destination=12+Avenue+des+Dunes%2C+17340+Ile+de+Re%2C+France"
+                  target="_blank"
+                  rel="noreferrer"
+                  data-track="hero-map-itineraire"
+                >
+                  Voir l&apos;itineraire
+                </a>
+              </AppButton>
             </div>
           </div>
         </section>
@@ -570,10 +520,10 @@ export default function HotelPage() {
             <form id="bookingForm" className="booking-form" onSubmit={handleBookingSubmit}>
               {bookingStep === 1 ? (
                 <>
-                  <input type="text" name="website" className="hp-field" tabIndex="-1" autoComplete="off" />
+                  <Input type="text" name="website" className="hp-field" tabIndex="-1" autoComplete="off" />
                   <div className="field">
-                    <label htmlFor="checkIn">Arrivee</label>
-                    <input
+                    <Label htmlFor="checkIn">Arrivee</Label>
+                    <Input
                       type="date"
                       id="checkIn"
                       name="checkIn"
@@ -584,8 +534,8 @@ export default function HotelPage() {
                     />
                   </div>
                   <div className="field">
-                    <label htmlFor="checkOut">Depart</label>
-                    <input
+                    <Label htmlFor="checkOut">Depart</Label>
+                    <Input
                       type="date"
                       id="checkOut"
                       name="checkOut"
@@ -601,26 +551,30 @@ export default function HotelPage() {
               {bookingStep === 2 ? (
                 <>
                   <div className="field">
-                    <label htmlFor="roomType">Type de chambre</label>
-                    <select
-                      id="roomType"
-                      name="roomType"
-                      value={form.roomType}
-                      onChange={(e) => updateField("roomType", e.target.value)}
-                      required
-                    >
-                      {ROOM_OPTIONS.map((option) => (
-                        <option key={option.value || "empty"} value={option.value} disabled={option.value && availability ? (availability[option.value] || 0) <= 0 : false}>
-                          {option.label}
-                          {option.value && availability ? ` (${availability[option.value]} dispo)` : ""}
-                        </option>
-                      ))}
-                    </select>
+                    <Label htmlFor="roomType">Type de chambre</Label>
+                    <Input type="hidden" name="roomType" value={form.roomType} />
+                    <Select value={form.roomType} onValueChange={(value) => updateField("roomType", value)} required>
+                      <SelectTrigger id="roomType">
+                        <SelectValue placeholder="Selectionnez une chambre" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ROOM_OPTIONS.map((option) => (
+                          <SelectItem
+                            key={option.value || "empty"}
+                            value={option.value || "_empty"}
+                            disabled={!option.value || (availability ? (availability[option.value] || 0) <= 0 : false)}
+                          >
+                            {option.label}
+                            {option.value && availability ? ` (${availability[option.value]} dispo)` : ""}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     {availabilityLoading ? <small>Verification des disponibilites...</small> : null}
                   </div>
                   <div className="field">
-                    <label htmlFor="guests">Voyageurs</label>
-                    <input
+                    <Label htmlFor="guests">Voyageurs</Label>
+                    <Input
                       type="number"
                       id="guests"
                       name="guests"
@@ -637,8 +591,8 @@ export default function HotelPage() {
               {bookingStep === 3 ? (
                 <>
                   <div className="field">
-                    <label htmlFor="fullName">Nom complet</label>
-                    <input
+                    <Label htmlFor="fullName">Nom complet</Label>
+                    <Input
                       type="text"
                       id="fullName"
                       name="fullName"
@@ -648,8 +602,8 @@ export default function HotelPage() {
                     />
                   </div>
                   <div className="field">
-                    <label htmlFor="bookingEmail">Email</label>
-                    <input
+                    <Label htmlFor="bookingEmail">Email</Label>
+                    <Input
                       type="email"
                       id="bookingEmail"
                       name="bookingEmail"
@@ -659,8 +613,8 @@ export default function HotelPage() {
                     />
                   </div>
                   <div className="field">
-                    <label htmlFor="phone">Telephone (optionnel)</label>
-                    <input
+                    <Label htmlFor="phone">Telephone (optionnel)</Label>
+                    <Input
                       type="tel"
                       id="phone"
                       name="phone"
@@ -669,8 +623,8 @@ export default function HotelPage() {
                     />
                   </div>
                   <div className="field">
-                    <label htmlFor="promo">Code promo</label>
-                    <input
+                    <Label htmlFor="promo">Code promo</Label>
+                    <Input
                       type="text"
                       id="promo"
                       name="promo"
@@ -684,10 +638,9 @@ export default function HotelPage() {
                     <div className="addons-list">
                       {ADDON_OPTIONS.filter((option) => option.value !== "none").map((option) => (
                         <label key={option.value} className="addon-item">
-                          <input
-                            type="checkbox"
+                          <Checkbox
                             checked={form.addons.includes(option.value)}
-                            onChange={() => toggleAddon(option.value)}
+                            onCheckedChange={() => toggleAddon(option.value)}
                           />
                           <span>{option.label}</span>
                         </label>
@@ -699,7 +652,7 @@ export default function HotelPage() {
 
               {hasSelectedRoom ? (
                 <div className="field summary">
-                  <label htmlFor="totalPrice">Total estime</label>
+                  <Label htmlFor="totalPrice">Total estime</Label>
                   <div className="price" id="totalPrice" aria-live="polite">{totalPriceLabel}</div>
                   <small>Taxes incluses. Ajuste selon vos dates.</small>
                   {estimate?.valid ? (
@@ -716,18 +669,18 @@ export default function HotelPage() {
 
               <div className="booking-actions">
                 {bookingStep > 1 ? (
-                  <button className="btn ghost" type="button" onClick={prevStep}>
+                  <AppButton tone="ghost" type="button" onClick={prevStep}>
                     Retour
-                  </button>
+                  </AppButton>
                 ) : null}
                 {bookingStep < 3 ? (
-                  <button className="btn primary" type="button" onClick={nextStep}>
+                  <AppButton tone="primary" type="button" onClick={nextStep}>
                     Continuer
-                  </button>
+                  </AppButton>
                 ) : (
-                  <button className="btn primary" type="submit" disabled={!estimate?.valid || bookingSubmitting}>
+                  <AppButton tone="primary" type="submit" disabled={!estimate?.valid || bookingSubmitting}>
                     {bookingSubmitting ? "Redirection paiement..." : "Confirmer et payer"}
-                  </button>
+                  </AppButton>
                 )}
               </div>
             </form>
@@ -736,7 +689,9 @@ export default function HotelPage() {
               <>
                 <div className="booking-sticky">
                   <span>Total: {totalPriceLabel}</span>
-                  <a className="btn primary" href="#bookingForm" data-track="mobile-finaliser">Finaliser</a>
+                  <AppButton asChild tone="primary">
+                    <a href="#bookingForm" data-track="mobile-finaliser">Finaliser</a>
+                  </AppButton>
                 </div>
 
                 <div className="booking-note">
@@ -784,14 +739,14 @@ export default function HotelPage() {
                           : "Complet"}
                       </small>
                     ) : null}
-                    <button
-                      className="btn ghost"
+                    <AppButton
+                      tone="ghost"
                       type="button"
                       onClick={() => handleRoomQuickSelect(room.value)}
                       disabled={availability ? (availability[room.value] || 0) <= 0 : false}
                     >
                       Reserver
-                    </button>
+                    </AppButton>
                   </div>
                 </article>
               ))}
@@ -877,8 +832,9 @@ export default function HotelPage() {
                 const panelId = `faq-panel-${index}`;
                 return (
                   <div key={item.question}>
-                    <button
+                    <AppButton
                       id={buttonId}
+                      tone="ghost"
                       className="faq-item"
                       type="button"
                       aria-expanded={isOpen}
@@ -887,7 +843,7 @@ export default function HotelPage() {
                     >
                       <span>{item.question}</span>
                       <span className="faq-icon">{isOpen ? "-" : "+"}</span>
-                    </button>
+                    </AppButton>
                     <div
                       id={panelId}
                       className="faq-panel"
@@ -910,7 +866,9 @@ export default function HotelPage() {
               <h2>Prets a reserver votre prochaine escapade </h2>
               <p>Bloquez vos dates aujourd&apos;hui et profitez de la meilleure disponibilite.</p>
             </div>
-            <Link className="btn primary" href="/disponibilites" data-track="final-cta-reserver">Reserver maintenant</Link>
+            <AppButton asChild tone="primary">
+              <Link href="/disponibilites" data-track="final-cta-reserver">Reserver maintenant</Link>
+            </AppButton>
           </div>
         </section>
       </main>
@@ -940,11 +898,11 @@ export default function HotelPage() {
             <h3>Newsletter</h3>
             <p>Recevez nos offres privees et inspirations voyage.</p>
             <form className="newsletter" onSubmit={handleNewsletterSubmit}>
-              <input type="text" name="website" className="hp-field" tabIndex="-1" autoComplete="off" />
-              <input type="email" placeholder="Votre email" name="newsletterEmail" aria-label="Votre email" required />
-              <button className="btn light" type="submit" disabled={newsletterSubmitting}>
+              <Input type="text" name="website" className="hp-field" tabIndex="-1" autoComplete="off" />
+              <Input type="email" placeholder="Votre email" name="newsletterEmail" aria-label="Votre email" required />
+              <AppButton tone="light" type="submit" disabled={newsletterSubmitting}>
                 {newsletterSubmitting ? "..." : "S'inscrire"}
-              </button>
+              </AppButton>
             </form>
             {newsletterStatus ? <p className="form-status" role="status">{newsletterStatus}</p> : null}
           </div>
@@ -969,9 +927,9 @@ export default function HotelPage() {
         >
           <h2 id="booking-modal-title">Reservation confirmee</h2>
           <p>{bookingSummary}</p>
-          <button ref={closeModalRef} className="btn primary" type="button" onClick={() => setModalOpen(false)}>
+          <AppButton ref={closeModalRef} tone="primary" type="button" onClick={() => setModalOpen(false)}>
             Fermer
-          </button>
+          </AppButton>
         </div>
       </div>
     </>

@@ -1,8 +1,9 @@
 import Link from "next/link";
+import AppButton from "@/components/ui/app-button";
 
 export const metadata = {
-  title: "Hôtel Spa Île de Ré",
-  description: "Séjour bien-être à l'Île de Ré avec spa, suites premium et réservation en ligne.",
+  title: "Hotel Spa Ile de Re",
+  description: "Sejour bien-etre a l'Ile de Re avec spa, suites premium et reservation en ligne.",
 };
 
 export default function HotelSpaIleDeRePage() {
@@ -11,26 +12,28 @@ export default function HotelSpaIleDeRePage() {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Accueil", item: "/" },
-      { "@type": "ListItem", position: 2, name: "Hôtel Spa Île de Ré", item: "/hotel-spa-ile-de-re" },
+      { "@type": "ListItem", position: 2, name: "Hotel Spa Ile de Re", item: "/hotel-spa-ile-de-re" },
     ],
   };
 
   return (
     <main className="container page-shell">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <h1>Hôtel spa à l’Île de Ré</h1>
+      <h1>Hotel spa a l'Ile de Re</h1>
       <p className="page-lead">
-        Hotel Atlas propose une expérience bien-être complète: spa minéral, soins personnalisés et chambres haut de
+        Hotel Atlas propose une experience bien-etre complete: spa mineral, soins personnalises et chambres haut de
         gamme.
       </p>
       <section className="section-top">
         <p>
-          Situé à proximité de la plage, notre hôtel spa à l’Île de Ré combine détente, gastronomie locale et
-          conciergerie dédiée.
+          Situe a proximite de la plage, notre hotel spa a l'Ile de Re combine detente, gastronomie locale et
+          conciergerie dediee.
         </p>
       </section>
       <div className="section-top">
-        <Link className="btn primary" href="/disponibilites">Vérifier les disponibilités</Link>
+        <AppButton asChild tone="primary">
+          <Link href="/disponibilites">Verifier les disponibilites</Link>
+        </AppButton>
       </div>
     </main>
   );

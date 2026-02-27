@@ -1,6 +1,7 @@
 import { Manrope, Playfair_Display } from "next/font/google";
 import AnalyticsTracker from "../components/AnalyticsTracker";
 import CookieBanner from "../components/CookieBanner";
+import SiteHeader from "../components/SiteHeader";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -70,6 +71,7 @@ export default function RootLayout({ children }) {
     <html lang="fr">
       <body className={`${manrope.variable} ${playfair.variable}`}>
         <AnalyticsTracker />
+        <SiteHeader />
         {children}
         <CookieBanner />
       </body>

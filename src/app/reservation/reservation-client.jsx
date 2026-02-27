@@ -3,6 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import AppButton from "@/components/ui/app-button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import pricingLib from "../../lib/pricing";
 import siteContentLib from "../../lib/siteContent";
 
@@ -319,9 +324,10 @@ export default function ReservationClient() {
             cell.empty ? (
               <span key={cell.key} className="calendar-empty" />
             ) : (
-              <button
+              <AppButton
                 key={cell.key}
                 type="button"
+                tone="ghost"
                 className={`calendar-day ${getCellState(cell.iso)}`}
                 disabled={cell.iso < today}
                 onClick={() => selectDate(cell.iso)}
@@ -330,7 +336,7 @@ export default function ReservationClient() {
               >
                 {isWeekendDate(cell.iso) ? <span className="weekend-marker" aria-hidden="true" /> : null}
                 <span className="day-number">{cell.day}</span>
-              </button>
+              </AppButton>
             )
           )}
         </div>
@@ -411,14 +417,15 @@ export default function ReservationClient() {
         </div>
       ) : null}
       <form className="booking-form" onSubmit={onSubmit}>
-        <input type="text" name="website" className="hp-field" tabIndex="-1" autoComplete="off" />
+        <Input type="text" name="website" className="hp-field" tabIndex="-1" autoComplete="off" />
         <div className="field calendar-field">
-          <label htmlFor="checkIn">Arrivee / Depart</label>
-          <input type="hidden" id="checkIn" name="checkIn" value={form.checkIn} />
-          <input type="hidden" id="checkOut" name="checkOut" value={form.checkOut} />
+          <Label htmlFor="checkIn">Arrivee / Depart</Label>
+          <Input type="hidden" id="checkIn" name="checkIn" value={form.checkIn} />
+          <Input type="hidden" id="checkOut" name="checkOut" value={form.checkOut} />
           <div className="calendar-toggle-bar">
-            <button
+            <AppButton
               type="button"
+              tone="ghost"
               className={`calendar-inline-trigger ${calendarOpen ? "is-open" : ""}`}
               onClick={() => {
                 if (calendarOpen) {
@@ -432,31 +439,33 @@ export default function ReservationClient() {
             >
               <span>{calendarTriggerLabel}</span>
               <span className="calendar-inline-caret" aria-hidden="true">{calendarOpen ? "^" : "v"}</span>
-            </button>
+            </AppButton>
           </div>
           {calendarOpen ? (
             <div className="calendar-panel" id="booking-calendar-panel">
               <div className="calendar-toolbar">
-                <button
+                <AppButton
                   type="button"
-                  className="btn ghost calendar-nav"
+                  tone="ghost"
+                  className="calendar-nav"
                   onClick={() => setVisibleMonth((prev) => addMonths(prev, -1))}
                   disabled={!canGoPrevMonth}
                   aria-label="Mois precedent"
                 >
                   {"<"}
-                </button>
+                </AppButton>
                 <p className="calendar-range-label">
                   {monthLabel(visibleMonth)}
                 </p>
-                <button
+                <AppButton
                   type="button"
-                  className="btn ghost calendar-nav"
+                  tone="ghost"
+                  className="calendar-nav"
                   onClick={() => setVisibleMonth((prev) => addMonths(prev, 1))}
                   aria-label="Mois suivant"
                 >
                   {">"}
-                </button>
+                </AppButton>
               </div>
               <div className="booking-calendar" role="group" aria-label="Calendrier de reservation">
                 {renderCalendarMonth(visibleMonth, firstMonthCells)}
@@ -474,30 +483,30 @@ export default function ReservationClient() {
           {!form.checkOut && form.checkIn ? <small>Selectionnez maintenant votre date de depart.</small> : null}
         </div>
         <div className="field">
-          <label htmlFor="roomType">Type de chambre</label>
-          <select
-            id="roomType"
-            name="roomType"
-            value={form.roomType}
-            onChange={(e) => updateField("roomType", e.target.value)}
-            required
-          >
-            {ROOM_OPTIONS.map((option) => (
-              <option
-                key={option.value || "empty"}
-                value={option.value}
-                disabled={option.value && availability ? (availability[option.value] || 0) <= 0 : false}
-              >
-                {option.label}
-                {option.value && availability ? ` (${availability[option.value]} dispo)` : ""}
-              </option>
-            ))}
-          </select>
+          <Label htmlFor="roomType">Type de chambre</Label>
+          <Input type="hidden" name="roomType" value={form.roomType} />
+          <Select value={form.roomType} onValueChange={(value) => updateField("roomType", value)} required>
+            <SelectTrigger id="roomType">
+              <SelectValue placeholder="Selectionnez une chambre" />
+            </SelectTrigger>
+            <SelectContent>
+              {ROOM_OPTIONS.map((option) => (
+                <SelectItem
+                  key={option.value || "empty"}
+                  value={option.value || "_empty"}
+                  disabled={!option.value || (availability ? (availability[option.value] || 0) <= 0 : false)}
+                >
+                  {option.label}
+                  {option.value && availability ? ` (${availability[option.value]} dispo)` : ""}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           {availabilityLoading ? <small>Verification des disponibilites...</small> : null}
         </div>
         <div className="field">
-          <label htmlFor="guests">Voyageurs</label>
-          <input
+          <Label htmlFor="guests">Voyageurs</Label>
+          <Input
             type="number"
             id="guests"
             name="guests"
@@ -509,8 +518,8 @@ export default function ReservationClient() {
           />
         </div>
         <div className="field">
-          <label htmlFor="fullName">Nom complet</label>
-          <input
+          <Label htmlFor="fullName">Nom complet</Label>
+          <Input
             type="text"
             id="fullName"
             name="fullName"
@@ -520,8 +529,8 @@ export default function ReservationClient() {
           />
         </div>
         <div className="field">
-          <label htmlFor="email">Email</label>
-          <input
+          <Label htmlFor="email">Email</Label>
+          <Input
             type="email"
             id="email"
             name="email"
@@ -531,8 +540,8 @@ export default function ReservationClient() {
           />
         </div>
         <div className="field">
-          <label htmlFor="phone">Telephone (optionnel)</label>
-          <input
+          <Label htmlFor="phone">Telephone (optionnel)</Label>
+          <Input
             type="tel"
             id="phone"
             name="phone"
@@ -541,8 +550,8 @@ export default function ReservationClient() {
           />
         </div>
         <div className="field">
-          <label htmlFor="promo">Code promo (optionnel)</label>
-          <input
+          <Label htmlFor="promo">Code promo (optionnel)</Label>
+          <Input
             type="text"
             id="promo"
             name="promo"
@@ -556,10 +565,9 @@ export default function ReservationClient() {
           <div className="addons-list">
             {ADDON_OPTIONS.filter((option) => option.value !== "none").map((option) => (
               <label key={option.value} className="addon-item">
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={form.addons.includes(option.value)}
-                  onChange={() => toggleAddon(option.value)}
+                  onCheckedChange={() => toggleAddon(option.value)}
                 />
                 <span>{option.label}</span>
               </label>
@@ -568,7 +576,7 @@ export default function ReservationClient() {
         </fieldset>
 
         <div className="field summary">
-          <label htmlFor="reservationTotal">Total estime</label>
+          <Label htmlFor="reservationTotal">Total estime</Label>
           <div className="price" id="reservationTotal">{totalPriceLabel}</div>
           <small>Taxes incluses. Ajuste selon vos dates.</small>
           {estimate?.valid ? (
@@ -580,7 +588,7 @@ export default function ReservationClient() {
           ) : null}
         </div>
         <div className="field summary">
-          <label>Recapitulatif</label>
+          <Label>Recapitulatif</Label>
           <div className="reservation-recap">
             <p><strong>Chambre:</strong> {selectedRoom ? selectedRoom.label.split(" - ")[0] : "-"}</p>
             <p><strong>Sejour:</strong> {form.checkIn || "-"} au {form.checkOut || "-"}</p>
@@ -594,10 +602,12 @@ export default function ReservationClient() {
         {fallbackMessage ? <p className="form-status" role="status">{fallbackMessage}</p> : null}
 
         <div className="booking-actions">
-          <Link className="btn ghost" href="/disponibilites">Modifier les dates</Link>
-          <button className="btn primary" type="submit" disabled={!estimate?.valid || submitting}>
+          <AppButton asChild tone="ghost">
+            <Link href="/disponibilites">Modifier les dates</Link>
+          </AppButton>
+          <AppButton tone="primary" type="submit" disabled={!estimate?.valid || submitting}>
             {submitting ? "Redirection paiement..." : "Confirmer et payer"}
-          </button>
+          </AppButton>
         </div>
       </form>
     </section>

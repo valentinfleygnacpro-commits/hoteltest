@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import AppButton from "@/components/ui/app-button";
 import RoomGallery from "./RoomGallery";
 import siteContentLib from "../../lib/siteContent";
 import pricingLib from "../../lib/pricing";
@@ -117,17 +118,17 @@ export default async function ChambresPage({ searchParams }) {
             </>
           ) : null}
         </p>
-        <Link className="btn ghost" href="/disponibilites">
-          Modifier les dates
-        </Link>
+        <AppButton asChild tone="ghost">
+          <Link href="/disponibilites">Modifier les dates</Link>
+        </AppButton>
       </section>
 
       {roomsToDisplay.length === 0 ? (
         <section className="chambres-selection-banner section-top">
           <p>Aucune chambre disponible sur ces dates. Essayez une autre periode.</p>
-          <Link className="btn primary" href="/disponibilites">
-            Changer mes dates
-          </Link>
+          <AppButton asChild tone="primary">
+            <Link href="/disponibilites">Changer mes dates</Link>
+          </AppButton>
         </section>
       ) : null}
 
@@ -146,12 +147,12 @@ export default async function ChambresPage({ searchParams }) {
                 </div>
                 <p className="chambres-price">A partir de {formatCurrency(ROOM_PRICES[room.value])}/nuit</p>
                 <div className="chambres-card-actions">
-                  <Link className="btn primary" href={buildReservationLink(room.value)}>
-                    Choisir cette chambre
-                  </Link>
-                  <Link className="btn ghost" href={`/chambres/${room.value}${criteriaSuffix}`}>
-                    Voir le detail
-                  </Link>
+                  <AppButton asChild tone="primary">
+                    <Link href={buildReservationLink(room.value)}>Choisir cette chambre</Link>
+                  </AppButton>
+                  <AppButton asChild tone="ghost">
+                    <Link href={`/chambres/${room.value}${criteriaSuffix}`}>Voir le detail</Link>
+                  </AppButton>
                 </div>
               </div>
             </article>
@@ -184,9 +185,9 @@ export default async function ChambresPage({ searchParams }) {
       </section>
 
       <div className="section-top chambres-bottom-cta">
-        <Link className="btn primary" href="/disponibilites">
-          Modifier ma recherche
-        </Link>
+        <AppButton asChild tone="primary">
+          <Link href="/disponibilites">Modifier ma recherche</Link>
+        </AppButton>
       </div>
     </main>
   );

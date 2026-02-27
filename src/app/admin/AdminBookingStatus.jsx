@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const OPTIONS = [
   { value: "new", label: "Nouvelle" },
@@ -31,13 +32,18 @@ export default function AdminBookingStatus({ bookingId, currentStatus, token }) 
 
   return (
     <div className="admin-status">
-      <select value={status} onChange={(event) => updateStatus(event.target.value)} disabled={saving}>
-        {OPTIONS.map((item) => (
-          <option key={item.value} value={item.value}>
-            {item.label}
-          </option>
-        ))}
-      </select>
+      <Select value={status} onValueChange={updateStatus} disabled={saving}>
+        <SelectTrigger className="w-[150px]">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {OPTIONS.map((item) => (
+            <SelectItem key={item.value} value={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
       {saving ? <small>...</small> : null}
     </div>
   );

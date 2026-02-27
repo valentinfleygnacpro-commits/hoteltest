@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import AppButton from "@/components/ui/app-button";
 import RoomGallery from "../RoomGallery";
 import pricingLib from "../../../lib/pricing";
 import { ROOM_DETAILS, ROOM_IMAGE_SETS } from "../roomData";
@@ -80,12 +81,12 @@ export default async function RoomDetailPage({ params, searchParams }) {
             <span>{room.bed}</span>
           </div>
           <div className="room-detail-actions">
-            <Link className="btn primary" href={reservationHref}>
-              Choisir cette chambre
-            </Link>
-            <Link className="btn ghost" href={`/chambres${backSuffix}`}>
-              Retour aux chambres
-            </Link>
+            <AppButton asChild tone="primary">
+              <Link href={reservationHref}>Choisir cette chambre</Link>
+            </AppButton>
+            <AppButton asChild tone="ghost">
+              <Link href={`/chambres${backSuffix}`}>Retour aux chambres</Link>
+            </AppButton>
           </div>
         </div>
       </section>

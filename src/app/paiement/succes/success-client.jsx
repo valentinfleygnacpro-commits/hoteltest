@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import AppButton from "@/components/ui/app-button";
 
 export default function PaiementSuccessClient() {
   const params = useSearchParams();
@@ -40,25 +41,27 @@ export default function PaiementSuccessClient() {
   return (
     <main className="container page-shell payment-success">
       <h1>Paiement</h1>
-      {status === "loading" ? <p className="page-lead">Vérification du paiement en cours...</p> : null}
+      {status === "loading" ? <p className="page-lead">Verification du paiement en cours...</p> : null}
       {status === "paid" ? (
         <>
-          <p className="page-lead">Paiement confirmé. Votre réservation est finalisée.</p>
-          <p>Référence réservation: {bookingId}</p>
+          <p className="page-lead">Paiement confirme. Votre reservation est finalisee.</p>
+          <p>Reference reservation: {bookingId}</p>
         </>
       ) : null}
       {status === "pending" ? (
         <p className="page-lead">
-          Paiement enregistré mais en attente de confirmation finale. Notre équipe revient vers vous rapidement.
+          Paiement enregistre mais en attente de confirmation finale. Notre equipe revient vers vous rapidement.
         </p>
       ) : null}
       {status === "error" ? (
         <p className="page-lead">
-          Impossible de confirmer le paiement automatiquement. Contactez-nous avec votre référence.
+          Impossible de confirmer le paiement automatiquement. Contactez-nous avec votre reference.
         </p>
       ) : null}
       <div className="section-top">
-        <Link className="btn primary" href="/">Retour à l’accueil</Link>
+        <AppButton asChild tone="primary">
+          <Link href="/">Retour a l'accueil</Link>
+        </AppButton>
       </div>
     </main>
   );

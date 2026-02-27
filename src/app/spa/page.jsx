@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import AppButton from "@/components/ui/app-button";
 
 export const metadata = {
   title: "Spa Mineral",
@@ -34,8 +35,8 @@ export default function SpaPage() {
           <div className="spa-detail-body">
             <h2>Soin Signature Ocean - 75 min</h2>
             <p>
-              Ce rituel commence par un gommage doux au sel marin, suivi d&apos;un massage
-              profond dos, epaules et jambes. L&apos;objectif: relacher les tensions, ameliorer
+              Ce rituel commence par un gommage doux au sel marin, suivi d'un massage
+              profond dos, epaules et jambes. L'objectif: relacher les tensions, ameliorer
               la circulation et retrouver une sensation de legerete immediate.
             </p>
             <p>
@@ -62,7 +63,7 @@ export default function SpaPage() {
               et detendre durablement le corps.
             </p>
             <p>
-              Recommande en fin d&apos;apres-midi pour profiter d&apos;une ambiance douce et d&apos;une
+              Recommande en fin d'apres-midi pour profiter d'une ambiance douce et d'une
               recuperation optimale avant le diner.
             </p>
           </div>
@@ -70,7 +71,9 @@ export default function SpaPage() {
       </section>
 
       <div className="section-top">
-        <Link className="btn primary" href="/disponibilites">Reserver un sejour bien-etre</Link>
+        <AppButton asChild tone="primary">
+          <Link href="/disponibilites">Reserver un sejour bien-etre</Link>
+        </AppButton>
       </div>
     </main>
   );
