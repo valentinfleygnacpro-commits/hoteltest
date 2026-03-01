@@ -14,6 +14,7 @@ async function trackContact(status) {
   } catch {
     return;
   }
+
   try {
     await fetch("/api/analytics", {
       method: "POST",
@@ -35,8 +36,9 @@ export default function ContactClient() {
     event.preventDefault();
     setSubmitting(true);
     setStatus("");
+    const form = event.currentTarget;
 
-    const formData = new FormData(event.currentTarget);
+    const formData = new FormData(form);
     const payload = {
       name: String(formData.get("name") || ""),
       email: String(formData.get("email") || ""),
@@ -50,12 +52,18 @@ export default function ContactClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (!response.ok) throw new Error("contact_failed");
-      setStatus("Message envoyé. Réponse sous 24h.");
-      event.currentTarget.reset();
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok || !data?.ok) {
+        throw new Error(data?.details || data?.error || "contact_failed");
+      }
+
+      setStatus("Message envoy\u00e9. R\u00e9ponse sous 24h.");
+      form.reset();
       trackContact("success");
-    } catch {
-      setStatus("Impossible d'envoyer pour le moment.");
+    } catch (error) {
+      const message = String(error?.message || "");
+      setStatus(message && message !== "contact_failed" ? `Erreur: ${message}` : "Impossible d'envoyer pour le moment.");
       trackContact("error");
     } finally {
       setSubmitting(false);
@@ -80,7 +88,7 @@ export default function ContactClient() {
       <AppButton tone="primary" type="submit" disabled={submitting}>
         {submitting ? "Envoi..." : "Envoyer"}
       </AppButton>
-      {status ? <p className="form-status">{status}</p> : null}
+      {status ? <p className="form-status" role="status">{status}</p> : null}
     </form>
   );
 }

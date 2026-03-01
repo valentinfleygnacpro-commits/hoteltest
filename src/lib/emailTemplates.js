@@ -10,13 +10,13 @@ function wrapEmail(title, body) {
 
 function bookingAdminTemplate({ bookingId, payload, estimate }) {
   return wrapEmail(
-    `Nouvelle réservation ${bookingId}`,
+    `Nouvelle r\u00e9servation ${bookingId}`,
     `
       <p><strong>Client:</strong> ${payload.fullName}</p>
       <p><strong>Email:</strong> ${payload.email}</p>
-      <p><strong>Téléphone:</strong> ${payload.phone || "-"}</p>
-      <p><strong>Arrivée:</strong> ${payload.checkIn}</p>
-      <p><strong>Départ:</strong> ${payload.checkOut}</p>
+      <p><strong>T\u00e9l\u00e9phone:</strong> ${payload.phone || "-"}</p>
+      <p><strong>Arriv\u00e9e:</strong> ${payload.checkIn}</p>
+      <p><strong>D\u00e9part:</strong> ${payload.checkOut}</p>
       <p><strong>Chambre:</strong> ${payload.roomType}</p>
       <p><strong>Voyageurs:</strong> ${payload.guests}</p>
       <p><strong>Option:</strong> ${payload.addon}</p>
@@ -27,13 +27,13 @@ function bookingAdminTemplate({ bookingId, payload, estimate }) {
 
 function bookingClientTemplate({ bookingId, payload, estimate }) {
   return wrapEmail(
-    "Votre réservation est bien enregistrée",
+    "Votre r\u00e9servation est bien enregistr\u00e9e",
     `
       <p>Bonjour ${payload.fullName},</p>
-      <p>Nous confirmons votre réservation <strong>${bookingId}</strong>.</p>
-      <p>Séjour du <strong>${payload.checkIn}</strong> au <strong>${payload.checkOut}</strong>.</p>
-      <p>Montant estimé: <strong>${Math.round(estimate.total)} EUR</strong>.</p>
-      <p>Notre équipe reviendra vers vous si besoin d'informations complémentaires.</p>
+      <p>Nous confirmons votre r\u00e9servation <strong>${bookingId}</strong>.</p>
+      <p>S\u00e9jour du <strong>${payload.checkIn}</strong> au <strong>${payload.checkOut}</strong>.</p>
+      <p>Montant estim\u00e9: <strong>${Math.round(estimate.total)} EUR</strong>.</p>
+      <p>Notre \u00e9quipe reviendra vers vous si besoin d'informations compl\u00e9mentaires.</p>
     `
   );
 }
@@ -51,20 +51,20 @@ function contactAdminTemplate({ name, email, message }) {
 
 function contactClientTemplate({ name }) {
   return wrapEmail(
-    "Message reçu",
+    "Message re\u00e7u",
     `
       <p>Bonjour ${name},</p>
-      <p>Merci pour votre message. Notre équipe vous répond sous 24h.</p>
+      <p>Merci pour votre message. Notre \u00e9quipe vous r\u00e9pond sous 24h.</p>
     `
   );
 }
 
 function newsletterWelcomeTemplate(email) {
   return wrapEmail(
-    "Bienvenue à la newsletter Hotel Atlas",
+    "Bienvenue \u00e0 la newsletter Hotel Atlas",
     `
-      <p>Votre inscription (${email}) est confirmée.</p>
-      <p>Vous recevrez nos offres privées et inspirations voyage.</p>
+      <p>Votre inscription (${email}) est confirm\u00e9e.</p>
+      <p>Vous recevrez nos offres priv\u00e9es et inspirations voyage.</p>
     `
   );
 }

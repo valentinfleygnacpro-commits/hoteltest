@@ -59,9 +59,19 @@ export async function POST(request) {
     });
     const clientResult = await sendWithResend({
       to: email,
-      subject: "Nous avons bien reçu votre message",
+      subject: "Nous avons bien re\u00e7u votre message",
       html: contactClientTemplate({ name: escapeHtml(name) }),
     });
+
+    if (!adminResult.sent && !clientResult.sent) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: adminResult.reason || clientResult.reason || "email_send_failed",
+        },
+        { status: 502 }
+      );
+    }
 
     return NextResponse.json({
       ok: true,
@@ -69,7 +79,15 @@ export async function POST(request) {
       emailClientSent: clientResult.sent,
       emailStatus: adminResult.reason || "sent",
     });
-  } catch {
-    return NextResponse.json({ ok: false, error: "server_error" }, { status: 500 });
+  } catch (error) {
+    console.error("contact_api_error", error);
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "server_error",
+        details: process.env.NODE_ENV === "development" ? String(error?.message || error) : undefined,
+      },
+      { status: 500 }
+    );
   }
 }

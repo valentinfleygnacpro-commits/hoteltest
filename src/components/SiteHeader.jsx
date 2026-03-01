@@ -2,11 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import AppButton from "@/components/ui/app-button";
 
 export default function SiteHeader() {
+  const pathname = usePathname();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const navRef = useRef(null);
+  const isAdminInterne = pathname?.startsWith("/admin-interne");
 
   useEffect(() => {
     function onDocumentClick(event) {
@@ -37,6 +40,30 @@ export default function SiteHeader() {
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
+
+  if (isAdminInterne) {
+    return (
+      <header className="site-header">
+        <nav className="navbar container" aria-label="Navigation admin interne">
+          <div className="brand">
+            <span className="brand-mark">A</span>
+            <div>
+              <p className="brand-title">Admin Interne</p>
+              <p className="brand-sub">Gestion des reservations</p>
+            </div>
+          </div>
+          <div className="hero-cta">
+            <AppButton asChild tone="ghost">
+              <Link href="/">Retour au site</Link>
+            </AppButton>
+            <AppButton asChild tone="light">
+              <Link href="/admin-interne">Deconnexion</Link>
+            </AppButton>
+          </div>
+        </nav>
+      </header>
+    );
+  }
 
   return (
     <header className="site-header">
