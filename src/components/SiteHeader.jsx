@@ -68,13 +68,13 @@ export default function SiteHeader() {
   return (
     <header className="site-header">
       <nav ref={navRef} className="navbar container" aria-label="Navigation principale">
-        <div className="brand">
+        <Link href="/" className="brand" onClick={() => setMobileNavOpen(false)}>
           <span className="brand-mark">A</span>
           <div>
             <p className="brand-title">Hotel Atlas</p>
             <p className="brand-sub">Boutique Resort - Bord de mer</p>
           </div>
-        </div>
+        </Link>
         <AppButton
           tone="ghost"
           className="nav-toggle"
@@ -91,7 +91,7 @@ export default function SiteHeader() {
           <li><Link href="/offres" onClick={() => setMobileNavOpen(false)}>Offres</Link></li>
           <li><Link href="/contact" onClick={() => setMobileNavOpen(false)}>Contact</Link></li>
         </ul>
-        <AppButton asChild tone="primary">
+        <AppButton asChild tone="primary" className="hero-book-cta navbar-book-cta">
           <Link href="/disponibilites" data-track="header-reserver">Reserver</Link>
         </AppButton>
       </nav>

@@ -65,6 +65,9 @@ const TRUST_ITEMS = [
   "Assistance conciergerie 24/7",
 ];
 
+const SCARCITY_LABEL = "Suites Signature disponibles en nombre limite";
+const FLEXIBLE_BOOKING_LABEL = "Reservation flexible jusqu'a 48h";
+
 const HOME_HERO_IMAGES = [
   "/page-daccueil-01.jpg",
   "/page-daccueil-02.jpg",
@@ -196,7 +199,7 @@ export default function HotelPage() {
     async function fetchAvailability() {
       setAvailabilityLoading(true);
       try {
-        const url = `/api/availabilitycheckIn=${encodeURIComponent(form.checkIn)}&checkOut=${encodeURIComponent(form.checkOut)}`;
+        const url = `/api/availability?checkIn=${encodeURIComponent(form.checkIn)}&checkOut=${encodeURIComponent(form.checkOut)}`;
         const response = await fetch(url);
         const payload = await response.json();
         if (!ignore && response.ok && payload.ok) {
@@ -415,6 +418,16 @@ export default function HotelPage() {
               <p>Hotel & Spa</p>
               <h2>HOTEL ATLAS</h2>
             </div>
+            <div className="hero-message-overlay">
+              <p>Une adresse confidentielle a 2 h de Paris</p>
+              <div className="hero-message-title">Votre sejour d&apos;exception, pense du detail a l&apos;emotion.</div>
+              <div className="hero-message-subtitle">Suites lumineuses, spa mineral, gastronomie locale et service 24/7.</div>
+              <div className="hero-message-actions">
+                <AppButton asChild tone="primary" className="hero-book-cta">
+                  <Link href="/disponibilites" data-track="hero-image-reserver">Reserver maintenant</Link>
+                </AppButton>
+              </div>
+            </div>
             <AppButton className="hero-carousel-btn prev" type="button" aria-label="Image precedente" onClick={showPrevHeroImage}>
               ‹
             </AppButton>
@@ -425,12 +438,12 @@ export default function HotelPage() {
           <div className="hero-overlay container">
             <div className="hero-copy">
               <p className="eyebrow">Une adresse confidentielle a 2 h de Paris</p>
-              <h1>Votre sejour d&apos;exception, pense du detail a l&apos;emotion.</h1>
-              <p className="hero-lead">Suites lumineuses, spa mineral, gastronomie locale et service 24/7.</p>
-              <p className="beach-highlight">A seulement 2 min de la plage</p>
+              <h1>Un refuge de caractere entre mer et nature.</h1>
+              <p className="hero-lead">Suites lumineuses, spa mineral et service discret a quelques pas de la plage.</p>
+              <p className="beach-highlight">{FLEXIBLE_BOOKING_LABEL}</p>
               <div className="hero-cta">
-                <AppButton asChild tone="primary">
-                  <Link href="/disponibilites" data-track="hero-disponibilites">Verifier les disponibilites</Link>
+                <AppButton asChild tone="primary" className="hero-book-cta">
+                  <Link href="/disponibilites" data-track="hero-disponibilites">Reserver maintenant</Link>
                 </AppButton>
                 <AppButton asChild tone="ghost">
                   <Link href="/disponibilites" data-track="hero-chambres">Voir les chambres</Link>
@@ -451,7 +464,7 @@ export default function HotelPage() {
                 </div>
               </div>
             </div>
-            <div className="hero-card hero-map-card">
+            <div className="hero-card hero-map-card" id="home-map">
               <p className="hero-map-kicker">Acces rapide</p>
               <h2>Hotel Atlas - Ile de Re</h2>
               <p className="hero-map-lead">A 2 min de la plage et a quelques minutes de Saint-Martin-de-Re.</p>
@@ -805,6 +818,23 @@ export default function HotelPage() {
             <div className="section-head">
               <h2>Ils en parlent</h2>
               <p>Experiences vecues et publiees sur des plateformes verifiees.</p>
+            </div>
+            <div className="reviews-spotlight" aria-label="Mise en avant des avis">
+              <div className="reviews-score">
+                <span className="reviews-stars" aria-hidden="true">★★★★★</span>
+                <strong>4.9/5</strong>
+                <p>Une note client exceptionnelle qui soutient la reservation directe.</p>
+              </div>
+              <div className="reviews-copy">
+                <p>Avis verifies, sejour premium, service tres regulier et forte demande sur les suites.</p>
+                <div className="reviews-tags">
+                  <span>{SCARCITY_LABEL}</span>
+                  <span>{FLEXIBLE_BOOKING_LABEL}</span>
+                </div>
+              </div>
+              <AppButton asChild tone="primary" className="reviews-cta">
+                <Link href="/disponibilites" data-track="reviews-reserver">Reserver maintenant</Link>
+              </AppButton>
             </div>
             <div className="testimonial-grid">
               {TESTIMONIALS.map((item) => (
