@@ -80,7 +80,6 @@ export async function POST(request) {
       emailStatus: adminResult.reason || "sent",
     });
   } catch (error) {
-    console.error("contact_api_error", error);
     return NextResponse.json(
       {
         ok: false,

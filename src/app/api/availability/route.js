@@ -3,7 +3,7 @@ import dbLib from "../../../lib/db";
 import availabilityLib from "../../../lib/availability";
 
 const { getDbSnapshot } = dbLib;
-const { getAvailabilityByRoom } = availabilityLib;
+const { getAvailabilityByRoomWithClosures } = availabilityLib;
 
 export async function GET(request) {
   try {
@@ -12,7 +12,7 @@ export async function GET(request) {
     const checkOut = searchParams.get("checkOut") || "";
 
     const db = await getDbSnapshot();
-    const availability = getAvailabilityByRoom(db.bookings, checkIn, checkOut);
+    const availability = getAvailabilityByRoomWithClosures(db.bookings, db.roomClosures, checkIn, checkOut);
     if (!availability) {
       return NextResponse.json({ ok: false, error: "invalid_dates" }, { status: 400 });
     }

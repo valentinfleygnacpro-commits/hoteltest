@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
 import dbLib from "../../../../../../lib/db";
+import adminAuthLib from "../../../../../../lib/adminAuth";
 
 const { updateBookingStatus } = dbLib;
+const { resolveAdminRole, hasRoleAtLeast } = adminAuthLib;
 const ALLOWED = new Set(["new", "confirmed", "cancelled"]);
 
 export async function PATCH(request, { params }) {
   try {
     const token = request.headers.get("x-admin-token") || "";
-    const expected = process.env.ADMIN_DASHBOARD_TOKEN || "";
-    if (expected && token !== expected) {
+    const role = resolveAdminRole(token);
+    if (!role || !hasRoleAtLeast(role, "operator")) {
       return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
     }
 

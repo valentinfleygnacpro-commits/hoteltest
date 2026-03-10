@@ -25,8 +25,9 @@ export function generateStaticParams() {
   return Object.keys(ROOM_DETAILS).map((slug) => ({ slug }));
 }
 
-export function generateMetadata({ params }) {
-  const room = ROOM_DETAILS[params.slug];
+export async function generateMetadata({ params }) {
+  const resolvedParams = await params;
+  const room = ROOM_DETAILS[resolvedParams.slug];
   if (!room) {
     return {
       title: "Chambre introuvable",
@@ -40,8 +41,9 @@ export function generateMetadata({ params }) {
 }
 
 export default async function RoomDetailPage({ params, searchParams }) {
+  const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
-  const room = ROOM_DETAILS[params.slug];
+  const room = ROOM_DETAILS[resolvedParams.slug];
   const checkIn = getStringParam(resolvedSearchParams, "checkIn");
   const checkOut = getStringParam(resolvedSearchParams, "checkOut");
   const guests = getStringParam(resolvedSearchParams, "guests");

@@ -8,6 +8,9 @@ export const ROOM_DETAILS = {
   classic: {
     slug: "classic",
     name: "Classic",
+    category: "classic",
+    view: "patio",
+    filterAmenities: ["bureau", "douche", "cafe"],
     tagline: "L'essentiel premium pour une escapade a deux.",
     surface: "22 m2",
     guests: "2 pers.",
@@ -30,6 +33,9 @@ export const ROOM_DETAILS = {
   deluxe: {
     slug: "deluxe",
     name: "Deluxe",
+    category: "deluxe",
+    view: "jardin",
+    filterAmenities: ["salon", "bureau", "climatisation"],
     tagline: "Plus d'espace, plus de confort, vue degagee sur les jardins.",
     surface: "30 m2",
     guests: "2-3 pers.",
@@ -52,6 +58,9 @@ export const ROOM_DETAILS = {
   suite: {
     slug: "suite",
     name: "Suite Signature",
+    category: "suite",
+    view: "baie",
+    filterAmenities: ["salon", "baignoire", "spa", "mini-bar"],
     tagline: "Notre experience la plus complete pour un sejour d'exception.",
     surface: "45 m2",
     guests: "4 pers.",
@@ -71,6 +80,27 @@ export const ROOM_DETAILS = {
       "Transfert gare/aeroport disponible en option",
     ],
   },
+};
+
+export const ROOM_FILTER_OPTIONS = {
+  categories: [
+    { value: "all", label: "Toutes categories" },
+    { value: "classic", label: "Chambre Classic" },
+    { value: "deluxe", label: "Chambre Deluxe" },
+    { value: "suite", label: "Suite Signature" },
+  ],
+  views: [
+    { value: "all", label: "Toutes les vues" },
+    { value: "patio", label: "Vue patio" },
+    { value: "jardin", label: "Vue jardin" },
+    { value: "baie", label: "Vue baie" },
+  ],
+  amenities: [
+    { value: "bureau", label: "Coin bureau" },
+    { value: "salon", label: "Salon" },
+    { value: "baignoire", label: "Baignoire" },
+    { value: "spa", label: "Acces spa" },
+  ],
 };
 
 export const ROOM_REVIEW_ITEMS = [

@@ -11,7 +11,7 @@ const { sendWithResend } = mailerLib;
 const { appendRecord, getDbSnapshot } = dbLib;
 const { bookingAdminTemplate, bookingClientTemplate } = emailTemplatesLib;
 const { enforceRateLimit } = rateLimitLib;
-const { getAvailabilityByRoom } = availabilityLib;
+const { getAvailabilityByRoomWithClosures } = availabilityLib;
 
 function escapeHtml(value) {
   return String(value)
@@ -69,7 +69,12 @@ export async function POST(request) {
     }
 
     const snapshot = await getDbSnapshot();
-    const availability = getAvailabilityByRoom(snapshot.bookings, payload.checkIn, payload.checkOut);
+    const availability = getAvailabilityByRoomWithClosures(
+      snapshot.bookings,
+      snapshot.roomClosures,
+      payload.checkIn,
+      payload.checkOut
+    );
     if (!availability || (availability[payload.roomType] ?? 0) <= 0) {
       return NextResponse.json({ ok: false, error: "room_unavailable" }, { status: 409 });
     }

@@ -1,6 +1,8 @@
 import { Manrope, Playfair_Display } from "next/font/google";
 import AnalyticsTracker from "../components/AnalyticsTracker";
 import CookieBanner from "../components/CookieBanner";
+import { LanguageProvider } from "../components/LanguageProvider";
+import RouteTransitionOverlay from "../components/RouteTransitionOverlay";
 import SiteHeader from "../components/SiteHeader";
 import "./globals.css";
 
@@ -70,10 +72,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <body className={`${manrope.variable} ${playfair.variable}`}>
-        <AnalyticsTracker />
-        <SiteHeader />
-        {children}
-        <CookieBanner />
+        <LanguageProvider>
+          <AnalyticsTracker />
+          <RouteTransitionOverlay />
+          <SiteHeader />
+          {children}
+          <CookieBanner />
+        </LanguageProvider>
       </body>
     </html>
   );

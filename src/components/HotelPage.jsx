@@ -4,6 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import AppButton from "@/components/ui/app-button";
+import HomeIntroOverlay from "@/components/HomeIntroOverlay";
+import { useLanguage } from "@/components/LanguageProvider";
+import { Accessibility, BedDouble, CalendarDays, Car, Snowflake, Star, Trees, UtensilsCrossed, Wifi, Wine } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +15,7 @@ import pricingLib from "../lib/pricing";
 import siteContentLib from "../lib/siteContent";
 
 const { ROOM_PRICES, addDaysISO, calculateEstimate, calculateNights, getTodayLocalISO } = pricingLib;
-const { ADDON_OPTIONS, FAQ_ITEMS, OFFER_ITEMS, ROOM_OPTIONS, TESTIMONIALS } = siteContentLib;
+const { ADDON_OPTIONS, FAQ_ITEMS, ROOM_OPTIONS, TESTIMONIALS } = siteContentLib;
 
 const DEFAULT_FORM = {
   checkIn: "",
@@ -39,41 +42,18 @@ const BOOKING_STEPS = [
   { id: 3, label: "Options" },
 ];
 
-const VALUE_POINTS = [
-  {
-    title: "Service de conciergerie premium",
-    text: "Recommandations et reservations personnalisees avant votre arrivee.",
-  },
-  {
-    title: "Emplacement privilegie",
-    text: "Entre plage, nature preservee et adresses gastronomiques locales.",
-  },
-  {
-    title: "Confort certifie",
-    text: "Literie haut de gamme, insonorisation et controle de temperature sur-mesure.",
-  },
-  {
-    title: "Experiences privees",
-    text: "Spa, transferts et activites organises selon votre planning.",
-  },
-];
-
-const TRUST_ITEMS = [
-  "Paiement securise 3D Secure",
-  "Note moyenne 4.9/5 sur plateformes verifiees",
-  "Annulation flexible jusqu'a 48h",
-  "Assistance conciergerie 24/7",
-];
-
 const SCARCITY_LABEL = "Suites Signature disponibles en nombre limite";
 const FLEXIBLE_BOOKING_LABEL = "Reservation flexible jusqu'a 48h";
 
-const HOME_HERO_IMAGES = [
-  "/page-daccueil-01.jpg",
-  "/page-daccueil-02.jpg",
+const HOME_HERO_IMAGES = ["/page-daccueil-02.jpg"];
+const HERO_ARCHIVE_IMAGES = [
+  "/bob.jpg",
+  "/bob4.jpg",
   "/page-daccueil-04.jpg",
-  "/page-daccueil-00.jpg",
+  "/bob1.jpg",
+  "/bob3.jpg",
 ];
+const HERO_ARCHIVE_COUNT = HERO_ARCHIVE_IMAGES.length;
 
 function formatCurrency(value) {
   return new Intl.NumberFormat("fr-FR", {
@@ -81,6 +61,16 @@ function formatCurrency(value) {
     currency: "EUR",
     maximumFractionDigits: 0,
   }).format(Math.round(value));
+}
+
+function ServiceIcon({ type }) {
+  const props = { size: 42, strokeWidth: 1.8 };
+  if (type === "bar") return <Wine {...props} />;
+  if (type === "wifi") return <Wifi {...props} />;
+  if (type === "ac") return <Snowflake {...props} />;
+  if (type === "pmr") return <Accessibility {...props} />;
+  if (type === "parking") return <Car {...props} />;
+  return <UtensilsCrossed {...props} />;
 }
 
 async function trackEvent(event, label) {
@@ -105,6 +95,7 @@ async function trackEvent(event, label) {
 }
 
 export default function HotelPage() {
+  const { language } = useLanguage();
   const today = useMemo(() => getTodayLocalISO(), []);
   const [form, setForm] = useState(DEFAULT_FORM);
   const [bookingStep, setBookingStep] = useState(1);
@@ -118,9 +109,89 @@ export default function HotelPage() {
   const [availability, setAvailability] = useState(null);
   const [availabilityLoading, setAvailabilityLoading] = useState(false);
   const [heroImageIndex, setHeroImageIndex] = useState(0);
+  const [archiveImageIndex, setArchiveImageIndex] = useState(0);
   const closeModalRef = useRef(null);
   const modalContentRef = useRef(null);
   const bookingSectionRef = useRef(null);
+  const heroCheckInRef = useRef(null);
+  const heroCheckOutRef = useRef(null);
+  const isEnglish = language === "EN";
+  const roomShowcaseItems = isEnglish
+    ? [
+        {
+          id: "classic",
+          kicker: "Classic room",
+          title: "Classic comfort and soft natural light.",
+          text: "A peaceful room with premium bedding, refined materials and all essential amenities for a relaxing stay.",
+          points: ["20-24 m2", "1-2 guests", "Rain shower"],
+          image: "/chambre1.webp",
+          featured: false,
+        },
+        {
+          id: "deluxe",
+          kicker: "Deluxe room",
+          title: "More space, more elegance, same serenity.",
+          text: "A generous layout with lounge corner and warm details, ideal for longer stays or elevated weekend escapes.",
+          points: ["26-32 m2", "Lounge corner", "Garden or sea view"],
+          image: "/chdeluxe1.webp",
+          featured: false,
+        },
+        {
+          id: "suite",
+          kicker: "Signature suite",
+          title: "Sea-facing suite with premium atmosphere.",
+          text: "Our most exclusive category, designed for privacy and comfort with a distinctive seaside character.",
+          points: ["35-45 m2", "Living area", "Premium amenities"],
+          image: "/chsup1.webp",
+          featured: true,
+        },
+      ]
+    : [
+        {
+          id: "classic",
+          kicker: "Chambre classique",
+          title: "Un confort essentiel dans une ambiance lumineuse.",
+          text: "Une chambre apaisante avec literie premium, materiaux soignes et tous les services utiles pour un sejour reposant.",
+          points: ["20-24 m2", "1-2 personnes", "Douche a effet pluie"],
+          image: "/chambre1.webp",
+          featured: false,
+        },
+        {
+          id: "deluxe",
+          kicker: "Chambre deluxe",
+          title: "Plus d'espace, plus d'elegance, meme serenite.",
+          text: "Un format genereux avec coin salon et finitions chaleureuses, ideal pour les longs sejours ou les week-ends haut de gamme.",
+          points: ["26-32 m2", "Coin salon", "Vue jardin ou mer"],
+          image: "/chdeluxe1.webp",
+          featured: false,
+        },
+        {
+          id: "suite",
+          kicker: "Suite signature",
+          title: "Une suite vue mer au positionnement premium.",
+          text: "Notre categorie la plus exclusive, pensee pour l'intimite et le confort avec une atmosphere bord de mer distinguee.",
+          points: ["35-45 m2", "Espace salon", "Amenities premium"],
+          image: "/chsup1.webp",
+          featured: true,
+        },
+      ];
+  const hotelServicesHighlights = isEnglish
+    ? [
+        { id: "bar", label: "Brasserie cafe bar lounge" },
+        { id: "wifi", label: "Free high-speed fiber Wi-Fi" },
+        { id: "ac", label: "Air conditioning" },
+        { id: "pmr", label: "Accessible PMR" },
+        { id: "parking", label: "Private secured parking" },
+        { id: "restaurant", label: "Restaurant" },
+      ]
+    : [
+        { id: "bar", label: "Brasserie cafe bar salon de the" },
+        { id: "wifi", label: "WiFi gratuit haut debit fibre optique" },
+        { id: "ac", label: "Air conditionne" },
+        { id: "pmr", label: "Accessible PMR" },
+        { id: "parking", label: "Parking payant prive et securise" },
+        { id: "restaurant", label: "Restaurant" },
+      ];
 
   useEffect(() => {
     if (modalOpen) {
@@ -162,10 +233,51 @@ export default function HotelPage() {
   }, [modalOpen]);
 
   useEffect(() => {
+    if (HOME_HERO_IMAGES.length <= 1) return undefined;
     const timer = window.setInterval(() => {
       setHeroImageIndex((prev) => (prev + 1) % HOME_HERO_IMAGES.length);
     }, 4000);
     return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    if (HERO_ARCHIVE_COUNT <= 1) return undefined;
+    const timer = window.setInterval(() => {
+      setArchiveImageIndex((prev) => (prev >= HERO_ARCHIVE_COUNT - 1 ? 0 : prev + 1));
+    }, 4200);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    setArchiveImageIndex((prev) => ((prev % HERO_ARCHIVE_COUNT) + HERO_ARCHIVE_COUNT) % HERO_ARCHIVE_COUNT);
+  }, []);
+
+  useEffect(() => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const elements = Array.from(document.querySelectorAll("[data-scroll-reveal]"));
+    if (!elements.length) return undefined;
+
+    if (reduceMotion) {
+      elements.forEach((element) => element.classList.add("is-visible"));
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.35,
+        rootMargin: "0px 0px -18% 0px",
+      }
+    );
+
+    elements.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
   }, []);
 
   const checkOutMin = form.checkIn ? addDaysISO(form.checkIn, 1) : today;
@@ -282,6 +394,37 @@ export default function HotelPage() {
     setHeroImageIndex((prev) => (prev + 1) % HOME_HERO_IMAGES.length);
   }
 
+  function openNativeDatePicker(input) {
+    if (!input) return;
+    input.focus();
+    if (typeof input.showPicker === "function") {
+      try {
+        input.showPicker();
+      } catch {}
+    }
+  }
+
+  function handleHeroAvailabilitySubmit(event) {
+    event.preventDefault();
+    setBookingError("");
+
+    if (!form.checkIn || !form.checkOut) {
+      setBookingError("Choisis une date d'arrivee et de depart.");
+      return;
+    }
+    if (calculateNights(form.checkIn, form.checkOut) <= 0) {
+      setBookingError("Les dates selectionnees sont invalides.");
+      return;
+    }
+
+    const params = new URLSearchParams({
+      checkIn: form.checkIn,
+      checkOut: form.checkOut,
+      guests: String(form.guests || 2),
+    });
+    window.location.href = `/chambres?${params.toString()}`;
+  }
+
   async function handleBookingSubmit(event) {
     event.preventDefault();
     const error = validateStep(3);
@@ -360,11 +503,11 @@ export default function HotelPage() {
         body: JSON.stringify(payload),
       });
       if (!response.ok) throw new Error("newsletter_failed");
-      setNewsletterStatus("Inscription confirmee. Merci.");
+      setNewsletterStatus(isEnglish ? "Subscription confirmed. Thank you." : "Inscription confirmee. Merci.");
       event.currentTarget.reset();
       trackEvent("newsletter_submit", "success");
     } catch {
-      setNewsletterStatus("Echec de l'inscription. Merci de reessayer.");
+      setNewsletterStatus(isEnglish ? "Subscription failed. Please try again." : "Echec de l'inscription. Merci de reessayer.");
       trackEvent("newsletter_submit", "error");
     } finally {
       setNewsletterSubmitting(false);
@@ -399,7 +542,8 @@ export default function HotelPage() {
 
   return (
     <>
-      <a className="skip-link" href="/disponibilites">Aller a la reservation</a>
+      <HomeIntroOverlay />
+      <a className="skip-link" href="/disponibilites">{isEnglish ? "Go to booking" : "Aller a la reservation"}</a>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(hotelJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
 
@@ -415,59 +559,226 @@ export default function HotelPage() {
               sizes="100vw"
             />
             <div className="hero-brand-overlay">
-              <p>Hotel & Spa</p>
+              <p>{isEnglish ? "Hotel & Spa" : "Hotel & Spa"}</p>
               <h2>HOTEL ATLAS</h2>
             </div>
-            <div className="hero-message-overlay">
-              <p>Une adresse confidentielle a 2 h de Paris</p>
-              <div className="hero-message-title">Votre sejour d&apos;exception, pense du detail a l&apos;emotion.</div>
-              <div className="hero-message-subtitle">Suites lumineuses, spa mineral, gastronomie locale et service 24/7.</div>
-              <div className="hero-message-actions">
-                <AppButton asChild tone="primary" className="hero-book-cta">
-                  <Link href="/disponibilites" data-track="hero-image-reserver">Reserver maintenant</Link>
-                </AppButton>
+            <div className="hero-message-overlay" data-scroll-reveal>
+              <p>{isEnglish ? "A HIDDEN ADDRESS BETWEEN SEA AND NATURE" : "UNE ADRESSE CONFIDENTIELLE ENTRE MER ET NATURE"}</p>
+              <div className="hero-message-title">
+                {isEnglish ? "Your oceanfront retreat on Ile de Re." : "Votre refuge face a l'ocean sur l'ile de Re."}
               </div>
+              <div className="hero-message-subtitle">
+                {isEnglish ? "Bright suites, mineral spa, local cuisine and 24/7 service." : "Suites lumineuses, spa mineral, gastronomie locale et service 24/7."}
+              </div>
+              <form className="hero-booking-bar" onSubmit={handleHeroAvailabilitySubmit}>
+                <label className="hero-booking-field">
+                  <span>{isEnglish ? "Arrival" : "Arrivee"}</span>
+                  <Input
+                    ref={heroCheckInRef}
+                    type="date"
+                    name="heroCheckIn"
+                    min={today}
+                    value={form.checkIn}
+                    onChange={(event) => updateField("checkIn", event.target.value)}
+                    onClick={() => openNativeDatePicker(heroCheckInRef.current)}
+                    onFocus={() => openNativeDatePicker(heroCheckInRef.current)}
+                    required
+                  />
+                </label>
+                <label className="hero-booking-field">
+                  <span>{isEnglish ? "Departure" : "Depart"}</span>
+                  <Input
+                    ref={heroCheckOutRef}
+                    type="date"
+                    name="heroCheckOut"
+                    min={checkOutMin}
+                    value={form.checkOut}
+                    onChange={(event) => updateField("checkOut", event.target.value)}
+                    onClick={() => openNativeDatePicker(heroCheckOutRef.current)}
+                    onFocus={() => openNativeDatePicker(heroCheckOutRef.current)}
+                    required
+                  />
+                </label>
+                <label className="hero-booking-field hero-booking-guests">
+                  <span>{isEnglish ? "Guests" : "Voyageurs"}</span>
+                  <Select value={String(form.guests)} onValueChange={(value) => updateField("guests", value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={isEnglish ? "Guests" : "Voyageurs"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">{isEnglish ? "1 guest" : "1 personne"}</SelectItem>
+                      <SelectItem value="2">{isEnglish ? "2 guests" : "2 personnes"}</SelectItem>
+                      <SelectItem value="3">{isEnglish ? "3 guests" : "3 personnes"}</SelectItem>
+                      <SelectItem value="4">{isEnglish ? "4 guests" : "4 personnes"}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </label>
+                <AppButton tone="primary" type="submit" className="hero-booking-submit">
+                  {isEnglish ? "View availability" : "Voir les disponibilites"}
+                </AppButton>
+              </form>
             </div>
-            <AppButton className="hero-carousel-btn prev" type="button" aria-label="Image precedente" onClick={showPrevHeroImage}>
-              ‹
-            </AppButton>
-            <AppButton className="hero-carousel-btn next" type="button" aria-label="Image suivante" onClick={showNextHeroImage}>
-              ›
-            </AppButton>
+            {HOME_HERO_IMAGES.length > 1 ? (
+              <>
+                <AppButton className="hero-carousel-btn prev" type="button" aria-label="Image precedente" onClick={showPrevHeroImage}>
+                  ‹
+                </AppButton>
+                <AppButton className="hero-carousel-btn next" type="button" aria-label="Image suivante" onClick={showNextHeroImage}>
+                  ›
+                </AppButton>
+              </>
+            ) : null}
           </div>
-          <div className="hero-overlay container">
-            <div className="hero-copy">
-              <p className="eyebrow">Une adresse confidentielle a 2 h de Paris</p>
-              <h1>Un refuge de caractere entre mer et nature.</h1>
-              <p className="hero-lead">Suites lumineuses, spa mineral et service discret a quelques pas de la plage.</p>
-              <p className="beach-highlight">{FLEXIBLE_BOOKING_LABEL}</p>
-              <div className="hero-cta">
-                <AppButton asChild tone="primary" className="hero-book-cta">
-                  <Link href="/disponibilites" data-track="hero-disponibilites">Reserver maintenant</Link>
-                </AppButton>
-                <AppButton asChild tone="ghost">
-                  <Link href="/disponibilites" data-track="hero-chambres">Voir les chambres</Link>
-                </AppButton>
+        </section>
+
+        <section className="hero-archive section-top">
+          <div className="container hero-archive-grid">
+            <aside className="hero-archive-copy" data-scroll-reveal>
+              <p className="hero-archive-kicker">{isEnglish ? "4-star seaside hotel" : "Hotel 4 etoiles en bord de mer"}</p>
+              <h2>{isEnglish ? "A calm address by the ocean." : "Une adresse de caractere au bord de l'ocean."}</h2>
+              <p className="hero-archive-description">
+                {isEnglish
+                  ? "Bright rooms, premium bedding and discreet service for stays focused on comfort."
+                  : "Des chambres lumineuses, une literie premium et un service discret pour un sejour axe sur le confort."}
+              </p>
+              <p className="hero-archive-description">
+                {isEnglish
+                  ? "From sea-view suites to quiet cocoon rooms, each space is designed for rest, privacy and a smooth hotel experience."
+                  : "Des suites vue mer aux chambres cocon, chaque espace est pense pour le repos, l'intimite et une experience hoteliere fluide."}
+              </p>
+              <p className="hero-archive-description">
+                {isEnglish
+                  ? "Natural materials, generous light and tailored hospitality create a warm atmosphere from arrival to checkout."
+                  : "Materiaux naturels, lumiere genereuse et accueil sur mesure creent une atmosphere chaleureuse de l'arrivee au depart."}
+              </p>
+            </aside>
+            <div className="hero-archive-gallery" aria-label={isEnglish ? "Hotel photo gallery" : "Galerie photos hotel"}>
+              <div
+                className="hero-archive-track"
+                style={{ transform: `translateX(-${archiveImageIndex * 100}%)` }}
+              >
+                {HERO_ARCHIVE_IMAGES.map((src, index) => (
+                  <figure key={src} className="hero-archive-item">
+                    <Image
+                      src={src}
+                      alt={`${isEnglish ? "Hotel Atlas photo" : "Photo Hotel Atlas"} ${index + 1}`}
+                      width={900}
+                      height={620}
+                      sizes="(max-width: 900px) 100vw, 50vw"
+                    />
+                  </figure>
+                ))}
               </div>
-              <div className="hero-stats">
-                <div>
-                  <strong>4.9/5</strong>
-                  <span>Note clients verifiee</span>
+              {HERO_ARCHIVE_IMAGES.length > 1 ? (
+                <div className="hero-archive-dots" role="tablist" aria-label={isEnglish ? "Image pagination" : "Pagination des images"}>
+                  {HERO_ARCHIVE_IMAGES.map((_, index) => (
+                    <button
+                      key={`hero-archive-dot-${index}`}
+                      type="button"
+                      className={`hero-archive-dot ${archiveImageIndex === index ? "is-active" : ""}`}
+                      aria-label={`${isEnglish ? "Go to image" : "Aller a l'image"} ${index + 1}`}
+                      aria-selected={archiveImageIndex === index}
+                      onClick={() => setArchiveImageIndex(index)}
+                    />
+                  ))}
                 </div>
-                <div>
-                  <strong>38</strong>
-                  <span>Suites et chambres</span>
+              ) : null}
+            </div>
+          </div>
+        </section>
+
+        <section className="rooms-showcase section-top">
+          <div className="container rooms-showcase-head" data-scroll-reveal>
+            <p className="rooms-showcase-kicker">{isEnglish ? "Room categories" : "Nos categories de chambres"}</p>
+            <h2>{isEnglish ? "Three atmospheres, one level of comfort." : "Trois atmospheres, un meme niveau de confort."}</h2>
+          </div>
+          <div className="container rooms-showcase-list">
+            {roomShowcaseItems.map((room, index) => (
+              <article key={room.id} className={`room-showcase-card ${index % 2 === 1 ? "is-reverse" : ""} ${room.featured ? "is-featured" : ""}`}>
+                <aside className="room-showcase-copy" data-scroll-reveal>
+                  {room.featured ? (
+                    <span className="room-showcase-badge">{isEnglish ? "Signature Suite" : "Suite Signature"}</span>
+                  ) : null}
+                  <p className="room-showcase-kicker">{room.kicker}</p>
+                  <h3>{room.title}</h3>
+                  <p className="room-showcase-description">{room.text}</p>
+                  <ul className="room-showcase-points">
+                    {room.points.map((point) => (
+                      <li key={point}>{point}</li>
+                    ))}
+                  </ul>
+                  <AppButton asChild tone="ghost" className="room-showcase-cta">
+                    <Link href={`/disponibilites?room=${room.id}`}>{isEnglish ? "View room" : "Voir la chambre"}</Link>
+                  </AppButton>
+                </aside>
+                <div className="room-showcase-media">
+                  <Image
+                    src={room.image}
+                    alt={room.title}
+                    width={1200}
+                    height={760}
+                    sizes="(max-width: 900px) 100vw, 60vw"
+                  />
                 </div>
-                <div className="beach-stat">
-                  <strong>2 min</strong>
-                  <span>De la plage</span>
-                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="hotel-services section-top">
+          <div className="container hotel-services-showcase">
+            <div className="hotel-services-photo">
+              <Image
+                src="/restaurant-terrasse.jpg"
+                alt={isEnglish ? "Restaurant terrace facing the sea" : "Terrasse du restaurant face a la mer"}
+                width={1360}
+                height={907}
+                sizes="(max-width: 900px) 100vw, 56vw"
+              />
+            </div>
+            <div className="hotel-services-panel" data-scroll-reveal>
+              <p className="hotel-services-panel-kicker">{isEnglish ? "Hotel services" : "Services de l'hotel"}</p>
+              <h2>{isEnglish ? "Amenities" : "Equipements"}</h2>
+              <div className="hotel-services-highlights">
+                {hotelServicesHighlights.map((item) => (
+                  <article key={item.id} className="hotel-service-highlight-card">
+                    <ServiceIcon type={item.id} />
+                    <h3>{item.label}</h3>
+                  </article>
+                ))}
               </div>
             </div>
-            <div className="hero-card hero-map-card" id="home-map">
-              <p className="hero-map-kicker">Acces rapide</p>
+          </div>
+        </section>
+
+        <section className="section-top">
+          <div className="container location-grid">
+            <aside className="hero-copy" data-scroll-reveal>
+              <p className="eyebrow">{isEnglish ? "A HIDDEN ADDRESS BETWEEN SEA AND NATURE" : "UNE ADRESSE CONFIDENTIELLE ENTRE MER ET NATURE"}</p>
+              <h1 className="location-title">{isEnglish ? "A refined retreat between sea and nature." : "Un refuge de caractere entre mer et nature."}</h1>
+              <p className="hero-lead location-description">{isEnglish ? "Bright suites, mineral spa and discreet service just steps from the beach." : "Suites lumineuses, spa mineral et service discret a quelques pas de la plage."}</p>
+              <div className="hero-stats">
+                <div className="hero-stat-item">
+                  <span className="hero-stat-icon" aria-hidden="true"><Star size={16} strokeWidth={2.2} /></span>
+                  <strong>4.9/5</strong>
+                  <span>{isEnglish ? "Verified guest rating" : "Note clients verifiee"}</span>
+                </div>
+                <div className="hero-stat-item">
+                  <span className="hero-stat-icon" aria-hidden="true"><BedDouble size={16} strokeWidth={2.2} /></span>
+                  <strong>38</strong>
+                  <span>{isEnglish ? "Rooms and suites" : "Suites et chambres"}</span>
+                </div>
+                <div className="hero-stat-item beach-stat">
+                  <span className="hero-stat-icon" aria-hidden="true"><Trees size={16} strokeWidth={2.2} /></span>
+                  <strong>2 min</strong>
+                  <span>{isEnglish ? "From the beach" : "De la plage"}</span>
+                </div>
+              </div>
+            </aside>
+            <div className="hero-card hero-map-card" id="home-map" data-scroll-reveal>
+              <p className="hero-map-kicker">{isEnglish ? "Quick access" : "Acces rapide"}</p>
               <h2>Hotel Atlas - Ile de Re</h2>
-              <p className="hero-map-lead">A 2 min de la plage et a quelques minutes de Saint-Martin-de-Re.</p>
+              <p className="hero-map-lead">{isEnglish ? "Just 2 minutes from the beach and a few minutes from Saint-Martin-de-Re." : "A 2 min de la plage et a quelques minutes de Saint-Martin-de-Re."}</p>
               <div className="hero-map-visual" aria-hidden="true">
                 <iframe
                   className="hero-map-frame"
@@ -484,49 +795,24 @@ export default function HotelPage() {
                   rel="noreferrer"
                   data-track="hero-map-itineraire"
                 >
-                  Voir l&apos;itineraire
+                  {isEnglish ? "Get directions" : "Decouvrir l'itineraire"}
                 </a>
               </AppButton>
             </div>
           </div>
         </section>
 
-        <section className="trust-strip" aria-label="Elements de confiance">
-          <div className="container trust-strip-inner">
-            {TRUST_ITEMS.map((item) => (
-              <p key={item}>{item}</p>
-            ))}
-          </div>
-        </section>
-
-        <section className="value-section">
-          <div className="container">
-            <div className="section-head">
-              <h2>Pourquoi choisir Hotel Atlas</h2>
-              <p>Un positionnement boutique assume, avec des standards hoteliers eleves.</p>
-            </div>
-            <div className="value-grid">
-              {VALUE_POINTS.map((item) => (
-                <article key={item.title} className="value-card">
-                  <h3>{item.title}</h3>
-                  <p>{item.text}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
         <section id="booking" className="booking" ref={bookingSectionRef}>
           <div className="container">
-            <div className="section-head">
-              <h2>Reserver votre sejour</h2>
-              <p>Disponibilites en temps reel, confirmation immediate.</p>
+            <div className="section-head" data-scroll-reveal>
+              <h2>{isEnglish ? "Book your stay" : "Reserver votre sejour"}</h2>
+              <p>{isEnglish ? "Real-time availability, instant confirmation." : "Disponibilites en temps reel, confirmation immediate."}</p>
             </div>
             <div className="stepper" role="list" aria-label="Etapes de reservation">
-              {BOOKING_STEPS.map((step) => (
+              {BOOKING_STEPS.map((step, index) => (
                 <div key={step.id} className={`step-item ${bookingStep >= step.id ? "active" : ""}`} role="listitem">
                   <span>{step.id}</span>
-                  <small>{step.label}</small>
+                  <small>{isEnglish ? ["Dates", "Room", "Options"][index] : step.label}</small>
                 </div>
               ))}
             </div>
@@ -665,9 +951,9 @@ export default function HotelPage() {
 
               {hasSelectedRoom ? (
                 <div className="field summary">
-                  <Label htmlFor="totalPrice">Total estime</Label>
+                  <Label htmlFor="totalPrice">{isEnglish ? "Estimated total" : "Total estime"}</Label>
                   <div className="price" id="totalPrice" aria-live="polite">{totalPriceLabel}</div>
-                  <small>Taxes incluses. Ajuste selon vos dates.</small>
+                  <small>{isEnglish ? "Taxes included. Adjusted to your dates." : "Taxes incluses. Ajuste selon vos dates."}</small>
                   {estimate?.valid ? (
                     <div className="price-breakdown">
                       <span>{estimate.nights} nuit(s)</span>
@@ -683,16 +969,16 @@ export default function HotelPage() {
               <div className="booking-actions">
                 {bookingStep > 1 ? (
                   <AppButton tone="ghost" type="button" onClick={prevStep}>
-                    Retour
+                    {isEnglish ? "Back" : "Retour"}
                   </AppButton>
                 ) : null}
                 {bookingStep < 3 ? (
                   <AppButton tone="primary" type="button" onClick={nextStep}>
-                    Continuer
+                    {isEnglish ? "Continue" : "Continuer"}
                   </AppButton>
                 ) : (
                   <AppButton tone="primary" type="submit" disabled={!estimate?.valid || bookingSubmitting}>
-                    {bookingSubmitting ? "Redirection paiement..." : "Confirmer et payer"}
+                    {bookingSubmitting ? (isEnglish ? "Redirecting to payment..." : "Redirection paiement...") : (isEnglish ? "Confirm and pay" : "Confirmer et payer")}
                   </AppButton>
                 )}
               </div>
@@ -728,9 +1014,9 @@ export default function HotelPage() {
 
         <section id="rooms" className="rooms">
           <div className="container">
-            <div className="section-head">
-              <h2>Chambres et suites</h2>
-              <p>Lumiere naturelle, textures nobles, silence absolu.</p>
+            <div className="section-head" data-scroll-reveal>
+              <h2>{isEnglish ? "Rooms and suites" : "Chambres et suites"}</h2>
+              <p>{isEnglish ? "Natural light, noble textures, absolute calm." : "Lumiere naturelle, textures nobles, silence absolu."}</p>
             </div>
             <div className="rooms-grid">
               {ROOM_OPTIONS.filter((item) => item.value).map((room) => (
@@ -758,7 +1044,7 @@ export default function HotelPage() {
                       onClick={() => handleRoomQuickSelect(room.value)}
                       disabled={availability ? (availability[room.value] || 0) <= 0 : false}
                     >
-                      Reserver
+                      {isEnglish ? "Book" : "Reserver"}
                     </AppButton>
                   </div>
                 </article>
@@ -767,76 +1053,37 @@ export default function HotelPage() {
           </div>
         </section>
 
-        <section id="amenities" className="amenities">
-          <div className="container">
-            <div className="section-head">
-              <h2>Services et experiences</h2>
-              <p>Une equipe dediee pour orchestrer chaque moment.</p>
-            </div>
-            <div className="amenities-grid">
-              <div className="amenity">
-                <h3>Spa mineral</h3>
-                <p>Sauna, hammam, soins holistiques et bassin chauffe.</p>
-                <Link href="/spa">Voir le programme spa</Link>
-              </div>
-              <div className="amenity">
-                <h3>Restaurant Atelier</h3>
-                <p>Cuisine locale, carte saisonniere, terrasse ombragee.</p>
-                <Link href="/restaurant">Voir la carte</Link>
-              </div>
-              <div className="amenity">
-                <h3>Conciergerie</h3>
-                <p>Excursions privees, reservations culturelles, transferts.</p>
-              </div>
-              <div className="amenity">
-                <h3>Espace travail</h3>
-                <p>Cabines calmes, Wi-Fi haut debit, salles de reunion.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="offers" className="offers">
-          <div className="container">
-            <div className="section-head">
-              <h2>Offres speciales</h2>
-              <p>Des sejours penses pour vous surprendre.</p>
-            </div>
-            <div className="offers-grid">
-              {OFFER_ITEMS.map((offer) => (
-                <article key={offer.title}>
-                  <h3>{offer.title}</h3>
-                  <p>{offer.details}</p>
-                  <span>Des {formatCurrency(offer.priceFrom)}</span>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
         <section className="testimonials">
           <div className="container">
-            <div className="section-head">
-              <h2>Ils en parlent</h2>
-              <p>Experiences vecues et publiees sur des plateformes verifiees.</p>
+            <div className="section-head" data-scroll-reveal>
+              <h2>{isEnglish ? "Guest reviews" : "Ils en parlent"}</h2>
+              <p>{isEnglish ? "Experiences published on verified platforms." : "Experiences vecues et publiees sur des plateformes verifiees."}</p>
             </div>
-            <div className="reviews-spotlight" aria-label="Mise en avant des avis">
+            <div className="reviews-spotlight" aria-label="Mise en avant des avis" data-scroll-reveal>
               <div className="reviews-score">
                 <span className="reviews-stars" aria-hidden="true">★★★★★</span>
                 <strong>4.9/5</strong>
-                <p>Une note client exceptionnelle qui soutient la reservation directe.</p>
+                <p>{isEnglish ? "An exceptional guest score that supports direct booking." : "Une note client exceptionnelle qui soutient la reservation directe."}</p>
               </div>
               <div className="reviews-copy">
-                <p>Avis verifies, sejour premium, service tres regulier et forte demande sur les suites.</p>
+                <p>{isEnglish ? "Verified reviews, premium stay, consistent service and strong suite demand." : "Avis verifies, sejour premium, service tres regulier et forte demande sur les suites."}</p>
+                <div className="reviews-platforms" aria-label={isEnglish ? "Review platforms" : "Plateformes d'avis"}>
+                  <span>{isEnglish ? "★★★★★ Google Review" : "★★★★★ Google Review"}</span>
+                  <span>{isEnglish ? "★★★★½ Booking Guest Score" : "★★★★½ Booking Guest Score"}</span>
+                </div>
                 <div className="reviews-tags">
                   <span>{SCARCITY_LABEL}</span>
-                  <span>{FLEXIBLE_BOOKING_LABEL}</span>
+                  <span>{isEnglish ? "Flexible booking up to 48h" : FLEXIBLE_BOOKING_LABEL}</span>
                 </div>
               </div>
               <AppButton asChild tone="primary" className="reviews-cta">
-                <Link href="/disponibilites" data-track="reviews-reserver">Reserver maintenant</Link>
+                <Link href="/disponibilites" data-track="reviews-reserver">
+                  <CalendarDays size={18} strokeWidth={2} aria-hidden="true" />
+                  {isEnglish ? "View availability" : "Voir les disponibilites"}
+                </Link>
               </AppButton>
             </div>
-            <div className="testimonial-grid">
+            <div className="testimonial-grid" data-scroll-reveal>
               {TESTIMONIALS.map((item) => (
                 <blockquote key={item.author}>
                   <span className="stars" aria-hidden="true">*****</span>
@@ -851,11 +1098,11 @@ export default function HotelPage() {
 
         <section className="faq">
           <div className="container">
-            <div className="section-head">
-              <h2>Questions frequentes</h2>
-              <p>Tout ce qu&apos;il faut savoir avant d&apos;arriver.</p>
+            <div className="section-head" data-scroll-reveal>
+              <h2>{isEnglish ? "Frequently asked questions" : "Questions frequentes"}</h2>
+              <p>{isEnglish ? "Everything you need to know before arriving." : "Tout ce qu'il faut savoir avant d'arriver."}</p>
             </div>
-            <div className="faq-list">
+            <div className="faq-list" data-scroll-reveal>
               {FAQ_ITEMS.map((item, index) => {
                 const isOpen = activeFaq === index;
                 const buttonId = `faq-button-${index}`;
@@ -890,54 +1137,46 @@ export default function HotelPage() {
           </div>
         </section>
 
-        <section className="final-cta">
-          <div className="container final-cta-inner">
-            <div>
-              <h2>Prets a reserver votre prochaine escapade </h2>
-              <p>Bloquez vos dates aujourd&apos;hui et profitez de la meilleure disponibilite.</p>
-            </div>
-            <AppButton asChild tone="primary">
-              <Link href="/disponibilites" data-track="final-cta-reserver">Reserver maintenant</Link>
-            </AppButton>
-          </div>
-        </section>
       </main>
 
       <footer className="site-footer">
         <div className="container footer-grid">
           <div>
             <h3>Hotel Atlas</h3>
-            <p>Un refuge de caractere entre mer et nature.</p>
+            <p>{isEnglish ? "A refined retreat between sea and nature." : "Un refuge de caractere entre mer et nature."}</p>
           </div>
           <div>
-            <h3>Informations</h3>
+            <h3>{isEnglish ? "Information" : "Informations"}</h3>
             <ul>
-              <li><Link href="/disponibilites">Chambres</Link></li>
+              <li><Link href="/disponibilites">{isEnglish ? "Rooms" : "Chambres"}</Link></li>
               <li><Link href="/spa">Spa</Link></li>
               <li><Link href="/restaurant">Restaurant</Link></li>
-              <li><Link href="/contact">Contact</Link></li>
-              <li><Link href="/mentions-legales">Mentions legales</Link></li>
-              <li><Link href="/politique-confidentialite">Confidentialite</Link></li>
-              <li><Link href="/conditions-generales">Conditions generales</Link></li>
-              <li><Link href="/hotel-spa-ile-de-re">Hotel spa Ile de Re</Link></li>
-              <li><Link href="/hotel-bord-de-mer-ile-de-re">Hotel bord de mer Ile de Re</Link></li>
+              <li><Link href="/contact">{isEnglish ? "Contact" : "Contact"}</Link></li>
+              <li><Link href="/mentions-legales">{isEnglish ? "Legal notice" : "Mentions legales"}</Link></li>
+              <li><Link href="/politique-confidentialite">{isEnglish ? "Privacy" : "Confidentialite"}</Link></li>
+            </ul>
+            <ul className="footer-secondary-links">
+              <li><Link href="/conditions-generales">{isEnglish ? "Terms and conditions" : "Conditions generales"}</Link></li>
+              <li><Link href="/hotel-spa-ile-de-re">{isEnglish ? "Spa hotel Ile de Re" : "Hotel spa Ile de Re"}</Link></li>
+              <li><Link href="/hotel-bord-de-mer-ile-de-re">{isEnglish ? "Seaside hotel Ile de Re" : "Hotel bord de mer Ile de Re"}</Link></li>
               <li><Link href="/admin">Admin</Link></li>
             </ul>
           </div>
           <div>
-            <h3>Newsletter</h3>
-            <p>Recevez nos offres privees et inspirations voyage.</p>
+            <h3>{isEnglish ? "Newsletter" : "Newsletter"}</h3>
+            <p>{isEnglish ? "Receive our private offers and travel inspiration." : "Recevez nos offres privees et inspirations voyage."}</p>
+            <p className="newsletter-note">{isEnglish ? "No spam. Only our private offers." : "Pas de spam. Seulement nos offres privees."}</p>
             <form className="newsletter" onSubmit={handleNewsletterSubmit}>
               <Input type="text" name="website" className="hp-field" tabIndex="-1" autoComplete="off" />
-              <Input type="email" placeholder="Votre email" name="newsletterEmail" aria-label="Votre email" required />
-              <AppButton tone="light" type="submit" disabled={newsletterSubmitting}>
-                {newsletterSubmitting ? "..." : "S'inscrire"}
+              <Input type="email" placeholder={isEnglish ? "Your email" : "Votre email"} name="newsletterEmail" aria-label={isEnglish ? "Your email" : "Votre email"} required />
+              <AppButton tone="light" type="submit" className="newsletter-submit" disabled={newsletterSubmitting}>
+                {newsletterSubmitting ? "..." : (isEnglish ? "Sign up" : "S'inscrire")}
               </AppButton>
             </form>
             {newsletterStatus ? <p className="form-status" role="status">{newsletterStatus}</p> : null}
           </div>
         </div>
-        <p className="footer-bottom">(c) 2026 Hotel Atlas. Tous droits reserves.</p>
+        <p className="footer-bottom">{isEnglish ? "(c) 2026 Hotel Atlas. All rights reserved." : "(c) 2026 Hotel Atlas. Tous droits reserves."}</p>
       </footer>
 
       <div
@@ -955,10 +1194,10 @@ export default function HotelPage() {
           aria-modal="true"
           aria-labelledby="booking-modal-title"
         >
-          <h2 id="booking-modal-title">Reservation confirmee</h2>
+          <h2 id="booking-modal-title">{isEnglish ? "Booking confirmed" : "Reservation confirmee"}</h2>
           <p>{bookingSummary}</p>
           <AppButton ref={closeModalRef} tone="primary" type="button" onClick={() => setModalOpen(false)}>
-            Fermer
+            {isEnglish ? "Close" : "Fermer"}
           </AppButton>
         </div>
       </div>

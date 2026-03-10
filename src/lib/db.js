@@ -13,6 +13,8 @@ const DB_FILE = path.join(DB_DIR, "hotel-db.json");
 
 const DEFAULT_DB = {
   bookings: [],
+  roomClosures: [],
+  roomClosureEvents: [],
   contacts: [],
   newsletter: [],
   analytics: [],
@@ -36,6 +38,8 @@ async function readDb() {
     const parsed = JSON.parse(raw);
     return {
       bookings: parsed.bookings || [],
+      roomClosures: parsed.roomClosures || [],
+      roomClosureEvents: parsed.roomClosureEvents || [],
       contacts: parsed.contacts || [],
       newsletter: parsed.newsletter || [],
       analytics: parsed.analytics || [],
@@ -70,12 +74,16 @@ async function getDashboardData() {
   return {
     totals: {
       bookings: db.bookings.length,
+      roomClosures: db.roomClosures.length,
+      roomClosureEvents: db.roomClosureEvents.length,
       contacts: db.contacts.length,
       newsletter: db.newsletter.length,
       analytics: db.analytics.length,
     },
     recent: {
       bookings: db.bookings.slice(0, 20),
+      roomClosures: db.roomClosures.slice(0, 50),
+      roomClosureEvents: db.roomClosureEvents.slice(0, 100),
       contacts: db.contacts.slice(0, 20),
       newsletter: db.newsletter.slice(0, 20),
       analytics: db.analytics.slice(0, 30),
@@ -104,6 +112,7 @@ async function getDashboardDataFiltered(filters = {}) {
   const db = await readDb();
   const query = normalizeText(filters.q);
   const status = normalizeText(filters.status);
+  const paymentStatus = normalizeText(filters.paymentStatus);
   const dateFrom = filters.dateFrom || "";
   const dateTo = filters.dateTo || "";
 
@@ -116,6 +125,10 @@ async function getDashboardDataFiltered(filters = {}) {
     );
     if (query && !haystack.includes(query)) return false;
     if (status && status !== "all" && recordStatus !== status) return false;
+    if (paymentStatus && paymentStatus !== "all") {
+      const recordPayment = normalizeText(item.paymentStatus || "unpaid");
+      if (recordPayment !== paymentStatus) return false;
+    }
     if (!filterByDate(item.createdAt, dateFrom, dateTo)) return false;
     return true;
   });
@@ -123,6 +136,8 @@ async function getDashboardDataFiltered(filters = {}) {
   return {
     totals: {
       bookings: db.bookings.length,
+      roomClosures: db.roomClosures.length,
+      roomClosureEvents: db.roomClosureEvents.length,
       contacts: db.contacts.length,
       newsletter: db.newsletter.length,
       analytics: db.analytics.length,
@@ -130,11 +145,52 @@ async function getDashboardDataFiltered(filters = {}) {
     },
     recent: {
       bookings: filteredBookings.slice(0, 100),
+      roomClosures: db.roomClosures.slice(0, 100),
+      roomClosureEvents: db.roomClosureEvents.slice(0, 200),
       contacts: db.contacts.slice(0, 20),
       newsletter: db.newsletter.slice(0, 20),
       analytics: db.analytics.slice(0, 30),
     },
   };
+}
+
+function compareDateStringsDesc(left, right) {
+  return String(right || "").localeCompare(String(left || ""));
+}
+
+function getNormalizedRoomClosures(roomClosures) {
+  return Array.isArray(roomClosures) ? roomClosures : [];
+}
+
+async function getRoomClosures() {
+  const db = await readDb();
+  return getNormalizedRoomClosures(db.roomClosures).sort((a, b) =>
+    compareDateStringsDesc(a.createdAt, b.createdAt)
+  );
+}
+
+function addRoomClosure(closure) {
+  writeQueue = writeQueue.then(async () => {
+    const db = await readDb();
+    const current = getNormalizedRoomClosures(db.roomClosures);
+    db.roomClosures = [closure, ...current].slice(0, 5000);
+    await writeDb(db);
+    return closure;
+  });
+  return writeQueue;
+}
+
+function deleteRoomClosure(id) {
+  writeQueue = writeQueue.then(async () => {
+    const db = await readDb();
+    const current = getNormalizedRoomClosures(db.roomClosures);
+    const before = current.length;
+    db.roomClosures = current.filter((item) => item.id !== id);
+    if (db.roomClosures.length === before) return null;
+    await writeDb(db);
+    return id;
+  });
+  return writeQueue;
 }
 
 function updateBookingStatus(id, status) {
@@ -189,4 +245,7 @@ module.exports = {
   updateBooking,
   getBookingById,
   getBookingsForExport,
+  getRoomClosures,
+  addRoomClosure,
+  deleteRoomClosure,
 };

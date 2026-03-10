@@ -1,7 +1,9 @@
 import dbLib from "../../lib/db";
+import adminAuthLib from "../../lib/adminAuth";
 import AdminInterneApp from "./AdminInterneApp";
 
 const { getDashboardDataFiltered } = dbLib;
+const { resolveAdminRole } = adminAuthLib;
 
 export const metadata = {
   title: "Admin Interne",
@@ -17,25 +19,27 @@ export default async function AdminInternePage({ searchParams }) {
   const token = params?.token || "";
   const q = params?.q || "";
   const status = params?.status || "all";
+  const paymentStatus = params?.paymentStatus || "all";
   const dateFrom = params?.dateFrom || "";
   const dateTo = params?.dateTo || "";
 
-  const expected = process.env.ADMIN_DASHBOARD_TOKEN || "";
-  if (expected && token !== expected) {
+  const role = resolveAdminRole(token);
+  if (!role) {
     return (
       <main className="container page-shell">
         <h1>Acces refuse</h1>
-        <p className="page-lead">Utilisez /admin-interne?token=VOTRE_TOKEN</p>
+        <p className="page-lead">Utilisez /admin-interne?token=VOTRE_TOKEN (admin, operator ou readonly)</p>
       </main>
     );
   }
 
-  const data = await getDashboardDataFiltered({ q, status, dateFrom, dateTo });
+  const data = await getDashboardDataFiltered({ q, status, paymentStatus, dateFrom, dateTo });
 
   return (
     <AdminInterneApp
       token={token}
-      initialFilters={{ q, status, dateFrom, dateTo }}
+      role={role}
+      initialFilters={{ q, status, paymentStatus, dateFrom, dateTo }}
       initialData={data}
     />
   );

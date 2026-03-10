@@ -1,7 +1,6 @@
-import Link from "next/link";
-import AppButton from "@/components/ui/app-button";
 import siteContentLib from "../../lib/siteContent";
 import pricingLib from "../../lib/pricing";
+import OffresPageClient from "./OffresPageClient";
 
 const { OFFER_ITEMS } = siteContentLib;
 const { formatPrice } = pricingLib;
@@ -21,28 +20,9 @@ function formatCurrency(value) {
 }
 
 export default function OffresPage() {
-  return (
-    <main className="container page-shell">
-      <h1>Offres speciales</h1>
-      <p className="page-lead">
-        Profitez de nos offres saisonnieres et composez votre sejour ideal.
-      </p>
-
-      <div className="offers-grid section-top">
-        {OFFER_ITEMS.map((offer) => (
-          <article key={offer.title}>
-            <h2>{offer.title}</h2>
-            <p>{offer.details}</p>
-            <span>A partir de {formatCurrency(offer.priceFrom)}</span>
-          </article>
-        ))}
-      </div>
-
-      <div className="section-top">
-        <AppButton asChild tone="primary">
-          <Link href="/disponibilites">Voir les disponibilites</Link>
-        </AppButton>
-      </div>
-    </main>
-  );
+  const offers = OFFER_ITEMS.map((offer) => ({
+    ...offer,
+    price: formatCurrency(offer.priceFrom),
+  }));
+  return <OffresPageClient offers={offers} />;
 }

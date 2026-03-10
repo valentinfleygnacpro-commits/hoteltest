@@ -76,7 +76,31 @@ function getAvailabilityByRoom(bookings, checkIn, checkOut) {
   return availability;
 }
 
+function getAvailabilityByRoomWithClosures(bookings, roomClosures, checkIn, checkOut) {
+  const availability = getAvailabilityByRoom(bookings, checkIn, checkOut);
+  if (!availability) return null;
+
+  const inDate = parseDate(checkIn);
+  const outDate = parseDate(checkOut);
+  if (!inDate || !outDate || outDate <= inDate) return null;
+
+  for (const closure of roomClosures || []) {
+    const roomType = closure?.roomType;
+    const quantity = Math.max(1, Number.parseInt(closure?.quantity || 1, 10) || 1);
+    if (!roomType || !(roomType in INVENTORY)) continue;
+    const cIn = parseDate(closure?.checkIn);
+    const cOut = parseDate(closure?.checkOut);
+    if (!cIn || !cOut || cOut <= cIn) continue;
+    if (dateRangesOverlap(inDate, outDate, cIn, cOut)) {
+      availability[roomType] = Math.max(0, availability[roomType] - quantity);
+    }
+  }
+
+  return availability;
+}
+
 module.exports = {
   INVENTORY,
   getAvailabilityByRoom,
+  getAvailabilityByRoomWithClosures,
 };
