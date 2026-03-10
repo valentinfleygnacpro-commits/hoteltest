@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import pricingLib from "../../lib/pricing";
 import DisponibilitesPageClient from "./DisponibilitesPageClient";
 
@@ -10,5 +11,9 @@ export const metadata = {
 
 export default function DisponibilitesPage() {
   const today = getTodayLocalISO();
-  return <DisponibilitesPageClient today={today} />;
+  return (
+    <Suspense fallback={null}>
+      <DisponibilitesPageClient today={today} />
+    </Suspense>
+  );
 }
