@@ -1,22 +1,9 @@
-import { Manrope, Playfair_Display } from "next/font/google";
 import AnalyticsTracker from "../components/AnalyticsTracker";
 import CookieBanner from "../components/CookieBanner";
 import { LanguageProvider } from "../components/LanguageProvider";
 import RouteTransitionOverlay from "../components/RouteTransitionOverlay";
 import SiteHeader from "../components/SiteHeader";
 import "./globals.css";
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
-  display: "swap",
-});
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
-  display: "swap",
-});
 
 function getMetadataBase() {
   const fallback = new URL("https://hotel-atlas.example");
@@ -71,7 +58,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
-      <body className={`${manrope.variable} ${playfair.variable}`}>
+      <body>
         <LanguageProvider>
           <AnalyticsTracker />
           <RouteTransitionOverlay />
