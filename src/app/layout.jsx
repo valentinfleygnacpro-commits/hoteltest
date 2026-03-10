@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import AnalyticsTracker from "../components/AnalyticsTracker";
 import CookieBanner from "../components/CookieBanner";
 import { LanguageProvider } from "../components/LanguageProvider";
@@ -61,7 +62,9 @@ export default function RootLayout({ children }) {
       <body>
         <LanguageProvider>
           <AnalyticsTracker />
-          <RouteTransitionOverlay />
+          <Suspense fallback={null}>
+            <RouteTransitionOverlay />
+          </Suspense>
           <SiteHeader />
           {children}
           <CookieBanner />
