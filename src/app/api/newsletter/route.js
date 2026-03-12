@@ -5,8 +5,8 @@ import emailTemplatesLib from "../../../lib/emailTemplates";
 import rateLimitLib from "../../../lib/rateLimit";
 
 const { sendWithResend } = mailerLib;
-const { appendRecord } = dbLib;
-const { newsletterWelcomeTemplate } = emailTemplatesLib;
+const { appendRecord, createToken } = dbLib;
+const { conferenceRegistrationTemplate, newsletterWelcomeTemplate } = emailTemplatesLib;
 const { enforceRateLimit } = rateLimitLib;
 
 function escapeHtml(value) {
@@ -31,6 +31,13 @@ export async function POST(request) {
     }
 
     const email = (body?.email || "").trim();
+    const name = String(body?.name || "").trim().slice(0, 120);
+    const source = String(body?.source || "newsletter").trim().slice(0, 80);
+    const isConferenceSignup = source === "conference-ia-gratuite";
+    const cancelToken = createToken(16);
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
+    const cancelUrl = `${siteUrl}/conference/annulation?token=${encodeURIComponent(cancelToken)}`;
+    const donateUrl = process.env.CONFERENCE_DONATION_URL || `${siteUrl}/contact`;
 
     const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (!isEmailValid) {
@@ -41,22 +48,39 @@ export async function POST(request) {
       id: `NWS-${Date.now().toString().slice(-8)}`,
       createdAt: new Date().toISOString(),
       email,
+      name,
+      source,
+      status: "active",
+      cancelToken,
+      cancelledAt: null,
     });
 
     const recipient = process.env.NEWSLETTER_RECIPIENT_EMAIL || process.env.RESEND_FROM || "";
     const adminResult = await sendWithResend({
       to: recipient,
       subject: "Nouvelle inscription newsletter - Hotel Atlas",
-      html: `<p>Nouvelle inscription: <strong>${escapeHtml(email)}</strong></p>`,
+      html: `<p>Nouvelle inscription: <strong>${escapeHtml(email)}</strong></p>
+        <p>Nom: <strong>${escapeHtml(name || "-")}</strong></p>
+        <p>Source: <strong>${escapeHtml(source)}</strong></p>`,
     });
     const clientResult = await sendWithResend({
       to: email,
-      subject: "Bienvenue a la newsletter Hotel Atlas",
-      html: newsletterWelcomeTemplate(escapeHtml(email)),
+      subject: isConferenceSignup
+        ? "Confirmation d'inscription - Conference IA"
+        : "Bienvenue a la newsletter Hotel Atlas",
+      html: isConferenceSignup
+        ? conferenceRegistrationTemplate({
+            name: escapeHtml(name || email),
+            cancelUrl,
+            donateUrl,
+          })
+        : newsletterWelcomeTemplate(escapeHtml(email)),
     });
 
     return NextResponse.json({
       ok: true,
+      cancelUrl,
+      donateUrl,
       emailAdminSent: adminResult.sent,
       emailClientSent: clientResult.sent,
       emailStatus: adminResult.reason || "sent",

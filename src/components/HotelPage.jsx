@@ -106,6 +106,9 @@ export default function HotelPage() {
   const [bookingSubmitting, setBookingSubmitting] = useState(false);
   const [newsletterSubmitting, setNewsletterSubmitting] = useState(false);
   const [newsletterStatus, setNewsletterStatus] = useState("");
+  const [conferenceOpen, setConferenceOpen] = useState(false);
+  const [conferenceSubmitting, setConferenceSubmitting] = useState(false);
+  const [conferenceStatus, setConferenceStatus] = useState("");
   const [availability, setAvailability] = useState(null);
   const [availabilityLoading, setAvailabilityLoading] = useState(false);
   const [heroImageIndex, setHeroImageIndex] = useState(0);
@@ -246,6 +249,16 @@ export default function HotelPage() {
       setArchiveImageIndex((prev) => (prev >= HERO_ARCHIVE_COUNT - 1 ? 0 : prev + 1));
     }, 4200);
     return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    try {
+      if (window.sessionStorage.getItem("ai-conference-dismissed") === "1") return undefined;
+    } catch {}
+    const timer = window.setTimeout(() => {
+      setConferenceOpen(true);
+    }, 1200);
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -514,6 +527,77 @@ export default function HotelPage() {
     }
   }
 
+  function dismissConferencePanel() {
+    setConferenceOpen(false);
+    try {
+      window.sessionStorage.setItem("ai-conference-dismissed", "1");
+    } catch {}
+  }
+
+  async function handleConferenceSubmit(event) {
+    event.preventDefault();
+    setConferenceSubmitting(true);
+    setConferenceStatus("");
+    const formElement = event.currentTarget;
+    const formData = new FormData(formElement);
+    const payload = {
+      name: String(formData.get("conferenceName") || ""),
+      email: String(formData.get("conferenceEmail") || ""),
+      source: "conference-ia-gratuite",
+    };
+
+    try {
+      const response = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.ok) {
+        if (result?.error === "rate_limited") {
+          throw new Error("rate_limited");
+        }
+        throw new Error(result?.error || "conference_signup_failed");
+      }
+
+      setConferenceStatus(
+        result.emailClientSent === false
+          ? (
+              isEnglish
+                ? "Registration confirmed. Your place is saved, but the confirmation email could not be sent yet."
+                : "Inscription confirmee. Votre place est reservee, mais l'email de confirmation n'a pas encore pu etre envoye."
+            )
+          : (
+              isEnglish
+                ? "Registration confirmed. We will send the free conference details by email."
+                : "Inscription confirmee. Nous vous enverrons les details de la conference gratuite par email."
+            )
+      );
+      formElement.reset();
+      trackEvent("conference_signup", "success");
+      window.setTimeout(() => dismissConferencePanel(), 2200);
+    } catch (error) {
+      setConferenceStatus(
+        error?.message === "rate_limited"
+          ? (
+              isEnglish
+                ? "Too many attempts. Please wait a moment before trying again."
+                : "Trop de tentatives. Merci d'attendre un instant avant de reessayer."
+            )
+          : (error?.message && error.message !== "conference_signup_failed"
+              ? `${isEnglish ? "Registration error" : "Erreur inscription"}: ${error.message}`
+              : (
+                  isEnglish
+                    ? "Registration failed. Please try again."
+                    : "Impossible de finaliser l'inscription. Merci de reessayer."
+                ))
+      );
+      trackEvent("conference_signup", "error");
+    } finally {
+      setConferenceSubmitting(false);
+    }
+  }
+
   const hotelJsonLd = {
     "@context": "https://schema.org",
     "@type": "Hotel",
@@ -546,6 +630,85 @@ export default function HotelPage() {
       <a className="skip-link" href="/disponibilites">{isEnglish ? "Go to booking" : "Aller a la reservation"}</a>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(hotelJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+
+      <div
+        className={`conference-modal ${conferenceOpen ? "open" : ""}`}
+        aria-hidden={!conferenceOpen}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) dismissConferencePanel();
+        }}
+      >
+        <div className="conference-card" role="dialog" aria-modal="true" aria-labelledby="conference-modal-title">
+          <button
+            type="button"
+            className="conference-close"
+            aria-label={isEnglish ? "Close conference panel" : "Fermer la proposition de conference"}
+            onClick={dismissConferencePanel}
+          >
+            ×
+          </button>
+          <div className="conference-visual">
+            <Image
+              src="/ia.png"
+              alt={isEnglish ? "Free AI conference" : "Conference IA gratuite"}
+              fill
+              sizes="(max-width: 900px) 100vw, 920px"
+            />
+            <div className="conference-visual-overlay">
+              <p className="conference-eyebrow">{isEnglish ? "Free AI conference" : "Conference IA gratuite"}</p>
+              <span className="conference-badge">{isEnglish ? "Online event" : "Evenement en ligne"}</span>
+            </div>
+          </div>
+          <div className="conference-content">
+            <div className="conference-copy-block">
+              <p className="conference-kicker">{isEnglish ? "Special invitation" : "Invitation speciale"}</p>
+              <h2 id="conference-modal-title">
+                {isEnglish
+                  ? "3 AI systems to save time and attract clients in 2026"
+                  : "3 systemes IA pour gagner du temps et attirer des clients en 2026"}
+              </h2>
+              <p className="conference-copy">
+                {isEnglish
+                  ? "Discover 3 simple AI workflows to save 10 hours a week, attract clients automatically and create marketing content in 5 minutes."
+                  : "Decouvrez 3 workflows IA simples pour gagner 10h par semaine, attirer des clients automatiquement et creer du contenu marketing en 5 minutes."}
+              </p>
+              <div className="conference-proofbar" aria-label={isEnglish ? "Conference trust signals" : "Elements de confiance"}>
+                <span>{isEnglish ? "+1200 entrepreneurs already registered" : "+1200 entrepreneurs deja inscrits"}</span>
+                <span>{isEnglish ? "Limited seats for the live session" : "Places limitees pour le live"}</span>
+              </div>
+              <p className="conference-learn">{isEnglish ? "What you will learn:" : "Ce que vous allez apprendre :"}</p>
+              <ul className="conference-points" aria-label={isEnglish ? "Conference highlights" : "Points forts de la conference"}>
+                <li>{isEnglish ? "3 AI automations you can launch today" : "3 automatisations IA que vous pouvez mettre en place aujourd'hui"}</li>
+                <li>{isEnglish ? "How to find clients with ChatGPT" : "Comment trouver des clients avec ChatGPT"}</li>
+                <li>{isEnglish ? "Create marketing content in 5 minutes" : "Creer du contenu marketing en 5 minutes"}</li>
+                <li>{isEnglish ? "The AI tools businesses use in 2026" : "Les outils IA que les entreprises utilisent en 2026"}</li>
+              </ul>
+            </div>
+            <div className="conference-action-block">
+                <p className="conference-urgency">{isEnglish ? "Free registration. Replay included." : "Inscription gratuite. Replay inclus."}</p>
+                <form className="conference-form" onSubmit={handleConferenceSubmit}>
+                  <Input
+                    type="text"
+                    name="conferenceName"
+                  placeholder={isEnglish ? "Your name" : "Votre nom"}
+                  aria-label={isEnglish ? "Your name" : "Votre nom"}
+                />
+                <Input
+                  type="email"
+                  name="conferenceEmail"
+                  placeholder={isEnglish ? "Your email" : "Votre email"}
+                  aria-label={isEnglish ? "Your email" : "Votre email"}
+                  required
+                />
+                <AppButton tone="primary" type="submit" className="conference-submit" disabled={conferenceSubmitting}>
+                  {conferenceSubmitting ? "..." : (isEnglish ? "Register for free" : "S'inscrire gratuitement")}
+                </AppButton>
+              </form>
+              {conferenceStatus ? <p className="form-status conference-status" role="status">{conferenceStatus}</p> : null}
+            </div>
+          </div>
+        </div>
+      </div>
 
       <main>
         <section className="hero" id="top">

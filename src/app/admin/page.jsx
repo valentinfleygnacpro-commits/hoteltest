@@ -32,6 +32,12 @@ function metricCard(label, value) {
   );
 }
 
+function formatNewsletterSource(value) {
+  if (value === "conference-ia-gratuite") return "Conference IA";
+  if (!value) return "Newsletter";
+  return value;
+}
+
 export default async function AdminPage({ searchParams }) {
   const resolvedParams = await Promise.resolve(searchParams);
   const token = resolvedParams?.token || "";
@@ -176,15 +182,35 @@ export default async function AdminPage({ searchParams }) {
 
       <section className="section-top">
         <h2>Dernieres conversions newsletter</h2>
-        <ul className="faq-list">
-          {data.recent.newsletter.map((item) => (
-            <li key={item.id} className="faq-item">
-              <span>{item.email}</span>
-              <span>{formatDate(item.createdAt)}</span>
-            </li>
-          ))}
-          {data.recent.newsletter.length === 0 ? <li className="faq-item">Aucune inscription.</li> : null}
-        </ul>
+        <div className="admin-table-wrap">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Source</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.recent.newsletter.map((item) => (
+                <tr key={item.id}>
+                  <td>{formatDate(item.createdAt)}</td>
+                  <td>{item.name || "-"}</td>
+                  <td>{item.email}</td>
+                  <td>{formatNewsletterSource(item.source)}</td>
+                  <td>{item.status || "active"}</td>
+                </tr>
+              ))}
+              {data.recent.newsletter.length === 0 ? (
+                <tr>
+                  <td colSpan={5}>Aucune inscription.</td>
+                </tr>
+              ) : null}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section className="section-top">

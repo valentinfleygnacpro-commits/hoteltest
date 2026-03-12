@@ -69,9 +69,34 @@ function newsletterWelcomeTemplate(email) {
   );
 }
 
+function conferenceRegistrationTemplate({ name, cancelUrl, donateUrl }) {
+  return wrapEmail(
+    "Votre inscription a la conference IA est confirmee",
+    `
+      <p>Bonjour ${name || "et merci"},</p>
+      <p>Votre place pour la conference <strong>3 systemes IA pour attirer des clients</strong> est bien reservee.</p>
+      <p><strong>Date :</strong> 26 octobre 2026</p>
+      <p><strong>Horaire :</strong> 10:00 - 17:45 CET</p>
+      <p><strong>Format :</strong> en ligne, acces envoye par email avant le direct</p>
+      <p>Au programme :</p>
+      <ul>
+        <li>Trouver des clients avec ChatGPT</li>
+        <li>Creer du contenu en 5 minutes</li>
+        <li>Lancer 3 automatisations utiles</li>
+      </ul>
+      <p>
+        <a href="${cancelUrl}" style="display:inline-block;padding:10px 16px;border-radius:10px;background:#f1e7da;color:#4a3524;text-decoration:none;font-weight:700;margin-right:8px">Annuler mon inscription</a>
+        <a href="${donateUrl}" style="display:inline-block;padding:10px 16px;border-radius:10px;background:#8f7255;color:#fff8ef;text-decoration:none;font-weight:700">Faire un don</a>
+      </p>
+      <p style="font-size:14px;color:#6d655b">Si vous ne pouvez plus participer, utilisez le lien d'annulation ci-dessus pour liberer votre place.</p>
+    `
+  );
+}
+
 module.exports = {
   bookingAdminTemplate,
   bookingClientTemplate,
+  conferenceRegistrationTemplate,
   contactAdminTemplate,
   contactClientTemplate,
   newsletterWelcomeTemplate,
