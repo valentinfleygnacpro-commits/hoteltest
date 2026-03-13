@@ -69,12 +69,14 @@ function newsletterWelcomeTemplate(email) {
   );
 }
 
-function conferenceRegistrationTemplate({ name, cancelUrl, donateUrl }) {
+function conferenceRegistrationTemplate({ name, cancelUrl, donateUrl, tier }) {
+  const placeLabel = tier === "premium" ? "Place premium - 15 EUR" : "Place gratuite";
   return wrapEmail(
     "Votre inscription a la conference IA est confirmee",
     `
       <p>Bonjour ${name || "et merci"},</p>
       <p>Votre place pour la conference <strong>3 systemes IA pour attirer des clients</strong> est bien reservee.</p>
+      <p><strong>Type de place :</strong> ${placeLabel}</p>
       <p><strong>Date :</strong> 26 octobre 2026</p>
       <p><strong>Horaire :</strong> 10:00 - 17:45 CET</p>
       <p><strong>Format :</strong> en ligne, acces envoye par email avant le direct</p>

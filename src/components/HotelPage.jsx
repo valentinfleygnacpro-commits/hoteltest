@@ -6,7 +6,7 @@ import Link from "next/link";
 import AppButton from "@/components/ui/app-button";
 import HomeIntroOverlay from "@/components/HomeIntroOverlay";
 import { useLanguage } from "@/components/LanguageProvider";
-import { Accessibility, BedDouble, CalendarDays, Car, Snowflake, Star, Trees, UtensilsCrossed, Wifi, Wine } from "lucide-react";
+import { Accessibility, ArrowRight, BedDouble, CalendarDays, Car, Snowflake, Star, Trees, UtensilsCrossed, Wifi, Wine } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -109,6 +109,7 @@ export default function HotelPage() {
   const [conferenceOpen, setConferenceOpen] = useState(false);
   const [conferenceSubmitting, setConferenceSubmitting] = useState(false);
   const [conferenceStatus, setConferenceStatus] = useState("");
+  const [conferenceTier, setConferenceTier] = useState("free");
   const [availability, setAvailability] = useState(null);
   const [availabilityLoading, setAvailabilityLoading] = useState(false);
   const [heroImageIndex, setHeroImageIndex] = useState(0);
@@ -543,11 +544,13 @@ export default function HotelPage() {
     const payload = {
       name: String(formData.get("conferenceName") || ""),
       email: String(formData.get("conferenceEmail") || ""),
+      tier: String(formData.get("conferenceTier") || "free"),
       source: "conference-ia-gratuite",
     };
 
     try {
-      const response = await fetch("/api/newsletter", {
+      const endpoint = payload.tier === "premium" ? "/api/conference/checkout" : "/api/newsletter";
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -558,6 +561,11 @@ export default function HotelPage() {
           throw new Error("rate_limited");
         }
         throw new Error(result?.error || "conference_signup_failed");
+      }
+
+      if (payload.tier === "premium" && result?.url) {
+        window.location.href = result.url;
+        return;
       }
 
       setConferenceStatus(
@@ -574,6 +582,7 @@ export default function HotelPage() {
             )
       );
       formElement.reset();
+      setConferenceTier("free");
       trackEvent("conference_signup", "success");
       window.setTimeout(() => dismissConferencePanel(), 2200);
     } catch (error) {
@@ -685,7 +694,11 @@ export default function HotelPage() {
               </ul>
             </div>
             <div className="conference-action-block">
-                <p className="conference-urgency">{isEnglish ? "Free registration. Replay included." : "Inscription gratuite. Replay inclus."}</p>
+                <p className="conference-urgency">
+                  {conferenceTier === "premium"
+                    ? (isEnglish ? "Premium place. EUR 15." : "Place premium. 15 EUR.")
+                    : (isEnglish ? "Free registration. Replay included." : "Inscription gratuite. Replay inclus.")}
+                </p>
                 <form className="conference-form" onSubmit={handleConferenceSubmit}>
                   <Input
                     type="text"
@@ -700,8 +713,32 @@ export default function HotelPage() {
                   aria-label={isEnglish ? "Your email" : "Votre email"}
                   required
                 />
+                <label className={`conference-tier ${conferenceTier === "free" ? "is-selected" : ""}`}>
+                  <input
+                    type="radio"
+                    name="conferenceTier"
+                    value="free"
+                    checked={conferenceTier === "free"}
+                    onChange={() => setConferenceTier("free")}
+                  />
+                  <span>{isEnglish ? "Free place" : "Place gratuite"}</span>
+                </label>
+                <label className={`conference-tier is-premium ${conferenceTier === "premium" ? "is-selected" : ""}`}>
+                  <input
+                    type="radio"
+                    name="conferenceTier"
+                    value="premium"
+                    checked={conferenceTier === "premium"}
+                    onChange={() => setConferenceTier("premium")}
+                  />
+                  <span>{isEnglish ? "Premium place - EUR 15" : "Place premium - 15 EUR"}</span>
+                </label>
                 <AppButton tone="primary" type="submit" className="conference-submit" disabled={conferenceSubmitting}>
-                  {conferenceSubmitting ? "..." : (isEnglish ? "Register for free" : "S'inscrire gratuitement")}
+                  {conferenceSubmitting
+                    ? "..."
+                    : conferenceTier === "premium"
+                      ? (isEnglish ? "Choose premium - EUR 15" : "Choisir premium - 15 EUR")
+                      : (isEnglish ? "Register for free" : "S'inscrire gratuitement")}
                 </AppButton>
               </form>
               {conferenceStatus ? <p className="form-status conference-status" role="status">{conferenceStatus}</p> : null}
@@ -871,7 +908,12 @@ export default function HotelPage() {
                     ))}
                   </ul>
                   <AppButton asChild tone="ghost" className="room-showcase-cta">
-                    <Link href={`/disponibilites?room=${room.id}`}>{isEnglish ? "View room" : "Voir la chambre"}</Link>
+                    <Link href={`/disponibilites?room=${room.id}`}>
+                      {isEnglish ? "View room" : "Voir la chambre"}
+                      <span className="room-showcase-cta-icon" aria-hidden="true">
+                        <ArrowRight size={14} strokeWidth={2.3} />
+                      </span>
+                    </Link>
                   </AppButton>
                 </aside>
                 <div className="room-showcase-media">

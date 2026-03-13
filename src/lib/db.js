@@ -222,6 +222,16 @@ async function getPostgresRecordById(collection, id) {
   return result.rows[0]?.record || null;
 }
 
+async function getRecordById(collection, id) {
+  if (!collection || !id) return null;
+  if (usePostgres) {
+    return getPostgresRecordById(collection, id);
+  }
+  const db = await readJsonDb();
+  const list = Array.isArray(db[collection]) ? db[collection] : [];
+  return list.find((item) => item.id === id) || null;
+}
+
 async function updatePostgresRecord(collection, id, updater) {
   await ensurePostgresSchema();
   const client = await getPool().connect();
@@ -405,32 +415,34 @@ function updateBookingStatus(id, status) {
 }
 
 function updateBooking(id, updater) {
+  return updateRecord("bookings", id, updater);
+}
+
+function updateRecord(collection, id, updater) {
   if (usePostgres) {
-    writeQueue = writeQueue.then(() => updatePostgresRecord("bookings", id, updater));
+    writeQueue = writeQueue.then(() => updatePostgresRecord(collection, id, updater));
     return writeQueue;
   }
   writeQueue = writeQueue.then(async () => {
     const db = await readJsonDb();
-    const index = db.bookings.findIndex((item) => item.id === id);
+    const list = Array.isArray(db[collection]) ? db[collection] : [];
+    const index = list.findIndex((item) => item.id === id);
     if (index === -1) return null;
-    const current = db.bookings[index];
+    const current = list[index];
     const next = typeof updater === "function" ? updater(current) : { ...current, ...updater };
-    db.bookings[index] = {
+    list[index] = {
       ...next,
       updatedAt: new Date().toISOString(),
     };
+    db[collection] = list;
     await writeJsonDb(db);
-    return db.bookings[index];
+    return list[index];
   });
   return writeQueue;
 }
 
 async function getBookingById(id) {
-  if (usePostgres) {
-    return getPostgresRecordById("bookings", id);
-  }
-  const db = await readJsonDb();
-  return db.bookings.find((item) => item.id === id) || null;
+  return getRecordById("bookings", id);
 }
 
 async function getBookingsForExport(filters = {}) {
@@ -477,6 +489,7 @@ module.exports = {
   cancelNewsletterRegistration,
   createToken,
   findNewsletterRegistrationByCancelToken,
+  getRecordById,
   getDbSnapshot,
   getDashboardData,
   getDashboardDataFiltered,
@@ -485,6 +498,7 @@ module.exports = {
   getBookingById,
   getBookingsForExport,
   getRoomClosures,
+  updateRecord,
   addRoomClosure,
   deleteRoomClosure,
 };

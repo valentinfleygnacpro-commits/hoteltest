@@ -38,6 +38,10 @@ function formatNewsletterSource(value) {
   return value;
 }
 
+function formatNewsletterTier(value) {
+  return value === "premium" ? "Premium - 15 EUR" : "Gratuite";
+}
+
 export default async function AdminPage({ searchParams }) {
   const resolvedParams = await Promise.resolve(searchParams);
   const token = resolvedParams?.token || "";
@@ -190,6 +194,8 @@ export default async function AdminPage({ searchParams }) {
                 <th>Nom</th>
                 <th>Email</th>
                 <th>Source</th>
+                <th>Place</th>
+                <th>Paiement</th>
                 <th>Statut</th>
               </tr>
             </thead>
@@ -200,12 +206,14 @@ export default async function AdminPage({ searchParams }) {
                   <td>{item.name || "-"}</td>
                   <td>{item.email}</td>
                   <td>{formatNewsletterSource(item.source)}</td>
+                  <td>{formatNewsletterTier(item.tier)}</td>
+                  <td>{item.paymentStatus || "-"}</td>
                   <td>{item.status || "active"}</td>
                 </tr>
               ))}
               {data.recent.newsletter.length === 0 ? (
                 <tr>
-                  <td colSpan={5}>Aucune inscription.</td>
+                  <td colSpan={7}>Aucune inscription.</td>
                 </tr>
               ) : null}
             </tbody>

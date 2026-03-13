@@ -33,6 +33,7 @@ export async function POST(request) {
     const email = (body?.email || "").trim();
     const name = String(body?.name || "").trim().slice(0, 120);
     const source = String(body?.source || "newsletter").trim().slice(0, 80);
+    const tier = String(body?.tier || "free").trim() === "premium" ? "premium" : "free";
     const isConferenceSignup = source === "conference-ia-gratuite";
     const cancelToken = createToken(16);
     const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
@@ -50,6 +51,7 @@ export async function POST(request) {
       email,
       name,
       source,
+      tier,
       status: "active",
       cancelToken,
       cancelledAt: null,
@@ -61,7 +63,8 @@ export async function POST(request) {
       subject: "Nouvelle inscription newsletter - Hotel Atlas",
       html: `<p>Nouvelle inscription: <strong>${escapeHtml(email)}</strong></p>
         <p>Nom: <strong>${escapeHtml(name || "-")}</strong></p>
-        <p>Source: <strong>${escapeHtml(source)}</strong></p>`,
+        <p>Source: <strong>${escapeHtml(source)}</strong></p>
+        <p>Type de place: <strong>${tier === "premium" ? "premium - 15 EUR" : "gratuite"}</strong></p>`,
     });
     const clientResult = await sendWithResend({
       to: email,
@@ -73,6 +76,7 @@ export async function POST(request) {
             name: escapeHtml(name || email),
             cancelUrl,
             donateUrl,
+            tier,
           })
         : newsletterWelcomeTemplate(escapeHtml(email)),
     });
